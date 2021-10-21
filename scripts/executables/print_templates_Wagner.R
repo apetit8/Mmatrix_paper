@@ -1,12 +1,23 @@
 source("../functions_R/tools.R")
 
 #####################
-sims.dirs <- c("../../simul/wagner/12g/c-1_-1","../../simul/wagner/12g/c1_1","../../simul/wagner/12g/c0_0")
+sims.dirs <- c(
+                # "../../simul/wagner/4g/c-1_-1","../../simul/wagner/4g/c1_1","../../simul/wagner/4g/c0_0",
+                # "../../simul/wagner/8g/c-1_-1","../../simul/wagner/8g/c1_1","../../simul/wagner/8g/c0_0",
+                # "../../simul/wagner/12g/c-1_-1","../../simul/wagner/12g/c1_1","../../simul/wagner/12g/c0_0",
+                # "../../simul/wagner/16g/c-1_-1","../../simul/wagner/16g/c1_1","../../simul/wagner/16g/c0_0",
+                # "../../simul/wagner/4g_pop500/c0_0", "../../simul/wagner/4g_pop500/c1_1", "../../simul/wagner/4g_pop500/c-1_-1",
+                # "../../simul/wagner/4g_pop10000/c0_0", "../../simul/wagner/4g_pop10000/c1_1", "../../simul/wagner/4g_pop10000/c-1_-1",
+                #"../../simul/wagner/4g_c1_1_Wneg"
+                # "../../simul/wagner/4g_cn_ab","../../simul/wagner/4g_cp_ab","../../simul/wagner/4g_fn_ab",
+                # "../../simul/wagner/4g_fp_ab","../../simul/wagner/4g_no_ab"
+                "../../simul/wagner/4g_chn_ab","../../simul/wagner/4g_chp_ab","../../simul/wagner/4g_fhn_ab",
+                "../../simul/wagner/4g_fhp_ab"
+                )
 
 #Properties of S for Wagner model :
-def.e <- 0.12 
-def.s <- 0.1
-def.a <- pi/4
+def.e <- 0.12 #eccentricity
+def.s <- 10 #size
 
 #####################
 

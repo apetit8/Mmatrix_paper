@@ -345,69 +345,78 @@ plot.features.onS.MvsW <- function(data.dirs1, data.dirs2, what="angle", xlim=NU
 
 oneplot.allellipse <- function(data.dirs, xlim=NULL, ylim=NULL, xlab="Trait 1", ylab="Trait2", 
                                S.factor=0.00005, M.factor=1,  G.factor=1, 
-                               mat.col=c(G="dodgerblue4", M="darkolivegreen4", S="orange"), 
                                asp=1, all.gen=FALSE, all.reps=FALSE, Gell=TRUE,...) {
   plot(NULL, xlim=xlim, ylim=ylim, xlab=xlab, ylab=ylab, asp=asp,  ...)
   
   for (data.dir in data.dirs) {
     
-  data.files = list.files(path=data.dir, pattern="simul.*.txt$", full.names=TRUE)
-  param.file = list.files(path=data.dir, pattern="*.par",        full.names=TRUE)
-  
-  stopifnot(length(data.files) >0, length(param.file) == 1)
-  
-  simuls = lapply(data.files, function(x) read.table(x, header=TRUE)) #import list
-  simuls.mean = replicate.mean(simuls)
-  
-  mygens <-rev(if (all.gen) simuls.mean[,"Gen"] else simuls.mean[nrow(simuls.mean),"Gen"])
-
-  for (gen in mygens) {
-    if (all.reps) {
-      first <- TRUE
-      for (simul in simuls) {
-        phen.mean <- extract.P.mean(simul, gen=gen)
-        
-        if (Gell!=TRUE) {
-          draw.ellipses(
-            M.mat=extract.M.matrix(simul, gen=gen),
-            S.mat=NULL, G.centre=phen.mean, M.factor=M.factor, S.factor=S.factor,
-            mat.col=makeTransparent(mat.col), xlab=xlab, ylab=ylab, xlim=xlim, ylim=ylim,
-            add=TRUE, ...)
-          first <- FALSE          
+    data.files = list.files(path=data.dir, pattern="simul.*.txt$", full.names=TRUE)
+    param.file = list.files(path=data.dir, pattern="*.par",        full.names=TRUE)
+    #browser()
+    rp <- read.param(param.file)
+    if (rp$TYPE_ARCHI %in% c("additive", "multilinear")) {
+      mat.col=c(G="dodgerblue4", M="green", S="orange") }
+    if (rp$TYPE_ARCHI %in% c("m2")) {
+      mat.col=c(G="dodgerblue4", M="darkolivegreen4", S="orange") }
+    
+    stopifnot(length(data.files) >0, length(param.file) == 1)
+    
+    simuls = lapply(data.files, function(x) read.table(x, header=TRUE)) #import list
+    simuls.mean = replicate.mean(simuls)
+    
+    mygens <-rev(if (all.gen) simuls.mean[,"Gen"] else simuls.mean[nrow(simuls.mean),"Gen"])
+    
+    for (gen in mygens) {
+      if (all.reps) {
+        first <- TRUE
+        for (simul in simuls) {
+          phen.mean <- extract.P.mean(simul, gen=gen)
+          
+          
+          if (Gell!=TRUE) {
+            draw.ellipses(
+              M.mat=extract.M.matrix(simul, gen=gen),
+              S.mat=NULL, G.centre=phen.mean, M.factor=M.factor, S.factor=S.factor,
+              mat.col=makeTransparent(mat.col), xlab=xlab, ylab=ylab, xlim=xlim, ylim=ylim,
+              add=TRUE, ...)
+            first <- FALSE          
           }
-        if (Gell){
-        draw.ellipses(
-          G.mat=extract.P.matrix(simul, gen=gen),
-          M.mat=extract.M.matrix(simul, gen=gen),
-          S.mat=NULL, G.centre=phen.mean, M.factor=M.factor, S.factor=S.factor, G.factor=G.factor,
-          mat.col=makeTransparent(mat.col), xlab=xlab, ylab=ylab, xlim=xlim, ylim=ylim,
-          add=TRUE, ...)
-        first <- FALSE
+          if (Gell){
+            draw.ellipses(
+              G.mat=extract.P.matrix(simul, gen=gen),
+              M.mat=extract.M.matrix(simul, gen=gen),
+              S.mat=NULL, G.centre=phen.mean, M.factor=M.factor, S.factor=S.factor, G.factor=G.factor,
+              mat.col=makeTransparent(mat.col), xlab=xlab, ylab=ylab, xlim=xlim, ylim=ylim,
+              add=TRUE, ...)
+            first <- FALSE
+          }
         }
       }
-    }
-    # Mean over replicates
-    phen.mean <- extract.P.mean(simuls.mean, gen=gen)
-    if (Gell){
-    draw.ellipses(
-      G.mat=extract.P.matrix(simuls.mean, gen=gen),
-      M.mat=extract.M.matrix(simuls.mean, gen=gen),
-      S.mat=if(gen==mygens[1]) extract.S.matrix(param.file) else NULL, 
-      G.centre=phen.mean, S.centre=extract.theta(param.file), 
-      M.factor=M.factor, S.factor=S.factor,  G.factor=G.factor,
-      mat.col=mat.col, xlab=xlab, ylab=ylab, xlim=xlim, ylim=ylim,
-      add=TRUE, ...)
-    }
-    if (Gell!=TRUE){
-      draw.ellipses(
-        M.mat=extract.M.matrix(simuls.mean, gen=gen),
-        S.mat=if(gen==mygens[1]) extract.S.matrix(param.file) else NULL,
-        G.centre=phen.mean, S.centre=extract.theta(param.file),
-        M.factor=M.factor, S.factor=S.factor,
-        mat.col=mat.col, xlab=xlab, ylab=ylab, xlim=xlim, ylim=ylim,
-        add=TRUE, ...)
+      # Mean over replicates
+      phen.mean <- extract.P.mean(simuls.mean, gen=gen)
+      if (Gell){
+        draw.ellipses(
+          G.mat=extract.P.matrix(simuls.mean, gen=gen),
+          M.mat=extract.M.matrix(simuls.mean, gen=gen),
+          S.mat=if(gen==mygens[1]) extract.S.matrix(param.file) else NULL, 
+          G.centre=phen.mean, S.centre=extract.theta(param.file), 
+          M.factor=M.factor, S.factor=S.factor,  G.factor=G.factor,
+          mat.col=mat.col, xlab=xlab, ylab=ylab, xlim=xlim, ylim=ylim,
+          add=TRUE, ...)
+        legend("topleft", lty=1, col=mat.col, legend=c(paste0("G", if (G.factor != 1) paste0(" (x ", G.factor, ")")), paste0("M", if (M.factor != 1) paste0(" (x ", M.factor, ")")), paste0("S", if (S.factor != 1) paste0(" (x ", S.factor, ")"))))
+      }
+      if (Gell!=TRUE){
+        draw.ellipses(
+          M.mat=extract.M.matrix(simuls.mean, gen=gen),
+          S.mat=if(gen==mygens[1]) extract.S.matrix(param.file) else NULL,
+          G.centre=phen.mean, S.centre=extract.theta(param.file),
+          M.factor=M.factor, S.factor=S.factor,
+          mat.col=mat.col, xlab=xlab, ylab=ylab, xlim=xlim, ylim=ylim,
+          add=TRUE, ...)
+        legend("topleft", lty=1, col=mat.col, legend=c(paste0(paste0("M", if (M.factor != 1) paste0(" (x ", M.factor, ")")), paste0("S", if (S.factor != 1) paste0(" (x ", S.factor, ")")))))
+        
+      }
     }
   }
- }
-  legend("topleft", lty=1, col=mat.col, legend=c(paste0("G", if (G.factor != 1) paste0(" (x ", G.factor, ")")), paste0("M", if (M.factor != 1) paste0(" (x ", M.factor, ")")), paste0("S", if (S.factor != 1) paste0(" (x ", S.factor, ")"))))
+  
 }

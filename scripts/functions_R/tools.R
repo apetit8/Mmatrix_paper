@@ -58,14 +58,20 @@ extract.W.matrix <- function(tt, gen=tt[nrow(tt), "Gen"]) {
 	t(extract.matrix(tt, "MeanAll", gen=gen))
 }
 
+##
+#function to read a parameter file
 read.param <- function(parfile) {
 	ff <- readLines(parfile)
 	ss <- strsplit(ff, split="\\s+")
 	ans <- sapply(ss, function(x) {cx <- suppressWarnings(as.numeric(x[-1])); if(any(is.na(cx))) x[-1] else cx})
-	names(ans) <- sapply(ss, "[", 1)
+	param.names <- sapply(ss, "[", 1)
+	if (any(duplicated(param.names))) warning("Duplicated param names in ", parfile)
+	names(ans) <- param.names
 	ans
 }
 
+##
+#function to write in a parameter file
 write.param <- function(parlist, parfile) {
 	unlink(parfile)
 	for (nn in names(parlist)) 
@@ -118,6 +124,8 @@ extract.S.matrix <- function(parfile) {
 	ans
 }
 
+##
+#Take properties of S and convert it in S parameters for Simevolv 
 param.S.matrix <- function(S.mat, n.genes=ncol(S.mat)) {
 	stopifnot(is.matrix(S.mat), ncol(S.mat) == nrow(S.mat))
 	stopifnot(n.genes > 0)
@@ -191,6 +199,7 @@ matrix2.optim <- function(target) {
 	matrix(c(ans$v1, ans$c, ans$c, ans$v2), ncol=2)
 }
 
+##
  # Common wrapper function
 matrix2.from.features <- function(cor=NA, angle=NA, size=NA, eccentricity=NA, method=c("numeric", "analytic")[1]) {
 	if (method == "numeric") {
@@ -206,6 +215,8 @@ matrix2.from.features <- function(cor=NA, angle=NA, size=NA, eccentricity=NA, me
 	}
 }
 
+##
+#Function to print parameter files
 param.from.sel.features <- function(param.template, param.out="param.par", cor=NA, angle=NA, size=NA, eccentricity=NA) {
 	pp <- read.param(param.template)
 	S.mat <- matrix2.from.features(cor=cor, angle=angle, size=size, eccentricity=eccentricity)
