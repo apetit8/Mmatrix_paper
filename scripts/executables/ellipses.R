@@ -1,11 +1,11 @@
 source("../functions_R/figure_tools.R")
 
 #####################
-sims.dirs <- list.dirs("../../simul/cercle/wag2/c-1_-1")
+sims.dirs <- list.dirs("../../simul/fig_2/round_s")
 sims.dir  <- sims.dirs[2:30]
-of        <- "wag2c-1_-1_small"
+of        <- "round_s"
 what      <- "angle" #"angle" or "ecc"
-where     <- "cercle"
+where     <- "wagner"
 #####################
 
 pdfname   <- print(sprintf("../../figures/%s/%s_ellipse.pdf", where, of))
@@ -20,7 +20,7 @@ S.factor <- 0.02 #Multilinear
 #S.factor <- 0.01
 
 #Draw ellipses
-pdf(pdfname, width=11, height=2)
+pdf(pdfname, width=11, height=5)
   layout(t(1:3))
 
   for (dd in sims.dir) {
@@ -29,8 +29,8 @@ pdf(pdfname, width=11, height=2)
     # plot.ellipse.dir(dd, S.factor=S.factor, M.factor=M.factor, main=dd ,xlim=c(0,1), ylim=c(0,1), all.reps=TRUE)#xlim=c(-3,3), ylim=c(-3,3) all.gen=TRUE all.reps=TRUE
     # plot.ellipse.dir(dd, S.factor=S.factor, M.factor=M.factor, main=dd ,xlim=c(0,1), ylim=c(0,1), all.gen=TRUE)#xlim=c(-3,3), ylim=c(-3,3) all.gen=TRUE all.reps=TRUE
 
-    plot.ellipse.dir(dd, S.factor=S.factor, M.factor=M.factor, G.factor=G.factor, main=dd ,xlim=c(-2,0), ylim=c(-2,0), Gell = FALSE)#xlim=c(-3,3), ylim=c(-3,3) all.gen=TRUE all.reps=TRUE
-    # plot.ellipse.dir(dd, S.factor=S.factor, M.factor=M.factor, G.factor=G.factor, main=dd ,xlim=c(-3,3), ylim=c(-3,3), all.reps=TRUE)#xlim=c(-3,3), ylim=c(-3,3) all.gen=TRUE all.reps=TRUE
+    # plot.ellipse.dir(dd, S.factor=S.factor, M.factor=M.factor, G.factor=G.factor, main=dd ,xlim=c(-2,0), ylim=c(-2,0), Gell = FALSE)#xlim=c(-3,3), ylim=c(-3,3) all.gen=TRUE all.reps=TRUE
+    plot.ellipse.dir(dd, S.factor=S.factor, M.factor=M.factor, G.factor=G.factor, main=dd ,xlim=c(-3,3), ylim=c(-3,3), all.reps=FALSE)#xlim=c(-3,3), ylim=c(-3,3) all.gen=TRUE all.reps=TRUE
     # plot.ellipse.dir(dd, S.factor=S.factor, M.factor=M.factor, G.factor=G.factor, main=dd ,xlim=c(-3,3), ylim=c(-3,3), all.gen=TRUE)#xlim=c(-3,3), ylim=c(-3,3) all.gen=TRUE all.reps=TRUE
 
 

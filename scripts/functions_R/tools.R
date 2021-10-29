@@ -1,5 +1,10 @@
 suppressPackageStartupMessages(library(abind))
-
+library(plyr)
+library(stringr)
+library(FactoMineR)
+library(factoextra)
+library(gridExtra)
+library(matrixStats)
 
 # Applies the function FUN (typically, mean or var) to each element of the list of matrix/data.frames 
 replicate.apply <- function(tt, FUN=mean, ...) {
@@ -150,6 +155,30 @@ modulopi <- function(angle) {
 	ifelse(ans > pi/2, ans-pi, ans)
 }
 
+modulo <- function(diff_angle, modulo=pi) {
+  diff_angle <- diff_angle %% modulo
+  ifelse(diff_angle > modulo/2, diff_angle - modulo, diff_angle)
+}
+
+modulo.all <- function(angle, modulo=pi) {
+  angle <- angle %% modulo
+  ifelse(angle > modulo/2, angle - modulo, angle)
+}
+
+mean.angle.2pi <- function(angles) {
+  atan2(mean(sin(angles)), mean(cos(angles)))
+}
+
+mean.angle.pi <- function(angles) {
+  modulo.all(mean.angle.2pi(2*(angles %% pi))/2, pi)
+}
+
+angle.diff <- function(ang1, ang2) {
+  diff <- ((pi/2)/(2*pi)) * acos( cos((2*pi*(ang1-ang2))/(pi/2)))
+  return(diff)
+}
+
+
 matrix.features <- function(M, n.genes=ncol(M)) {
 	stopifnot(ncol(M) > 1, n.genes <= ncol(M))
 	if (!isSymmetric(M)) warning("Non-symmetric matrix: check your input, results are probably meaningless.")
@@ -268,4 +297,43 @@ fraction <- function(x, cycles = 10, max.denominator = 2000)
   }
   pq[!fin, 1] <- x[!fin]
   pq
+}
+
+
+diff.ms.df <- function(sims.dir, modulo=pi/2){
+  simul.df <- data.frame()
+  #collect all the data
+  for (i in sims.dir) {
+    files     <- list.files(path = i, full.names=TRUE, pattern = "^simul")
+    param.file = list.files(path=i, pattern="param.par", full.names=TRUE)
+    stopifnot(length(files) >0, length(param.file) == 1)
+    
+    #read param.par to associate each simu with the S "what"
+    rp <- read.param(param.file)
+    mut.rate <- 2*rp$GENET_MUTRATES
+    if (rp$GENET_MUTTYPE=="locus") mut.rate <- mut.rate*rp$GENET_NBLOC
+    S.ref <- matrix.features(extract.S.matrix(param.file), n.genes=2)[["angle"]][1]
+    
+    mytopos <- lapply(files, function(ff) {
+      #print(ff)
+      tt <- read.table(ff, header=TRUE)
+      gen <-tt[nrow(tt),"Gen"]
+      P.mat <- extract.P.matrix(tt, gen=gen)
+      M.mat <- extract.M.matrix(tt, gen=gen)
+      M.feat <- matrix.features(M.mat,n.genes=2)[["angle"]][1] #M matrix
+      new <- c(S.ref, M.feat) #create a list of data
+    })
+    newt <- ldply(mytopos) # create a data.frame for i
+    simul.df <- rbind(simul.df, newt) #paste the data of i in a data.frame with the others
+  }
+  diff.df <- data.frame()
+  diff.ls <-modulo.all(simul.df[,2]-simul.df[,1], modulo=modulo)
+  return(diff.ls)
+}
+
+
+#Calculate the MSE between M and S angle
+mse.ms <- function(diff.ls){
+  mse <- mean((diff.ls)^2)
+  return(mse)
 }

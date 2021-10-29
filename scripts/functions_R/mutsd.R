@@ -4,7 +4,7 @@ source("../functions_R/tools.R")
 sim.path <- "../../../simevolv/bin/Release/Simul_Prog"
 can.tests <- 10
 
-M.from.mutsd <- function(param.multilin, mutsd, gen=100) {
+M.from.mutsd <- function(param.multilin, mutsd, gen=2000) {
 	pp <- read.param(param.multilin)
 	#stopifnot(pp$TYPE_ARCHI == "multilinear")
 
@@ -26,7 +26,7 @@ M.from.mutsd <- function(param.multilin, mutsd, gen=100) {
 	extract.M.matrix(res)
 }
 
-M.from.wagner <- function(param.wagner, gen=100) {
+M.from.wagner <- function(param.wagner, gen=2000) {
 	pp <- read.param(param.wagner)
 	stopifnot(pp$TYPE_ARCHI %in% c("m2","wagner"))
 	
@@ -46,7 +46,7 @@ M.from.wagner <- function(param.wagner, gen=100) {
 	extract.M.matrix(res)	
 }
 
-M.from.multi <- function(param.multilin, gen=100) {
+M.from.multi <- function(param.multilin, gen=2000) {
   pp <- read.param(param.multilin)
   stopifnot(pp$TYPE_ARCHI %in% c("multilinear"))
   
@@ -66,7 +66,7 @@ M.from.multi <- function(param.multilin, gen=100) {
   extract.M.matrix(res)	
 }
 
-mutsd.predict <- function(param.multilin, Vm, reps=10, gen=100, mlim=c(0.0001, 1), traits=NA, mc.cores=detectCores()-1) {
+mutsd.predict <- function(param.multilin, Vm, reps=10, gen=2000, mlim=c(0.0001, 1), traits=NA, mc.cores=detectCores()-1) {
 	if (is.matrix(Vm)) Vm     <- diag(Vm)
 	if (is.na(traits[1])) traits <- seq_along(Vm)
 	
@@ -88,7 +88,7 @@ mutsd.predict <- function(param.multilin, Vm, reps=10, gen=100, mlim=c(0.0001, 1
 	exp(predict(ll, list(log.Vm=log(sum(Vm)))))
 }
 	
-calibrate.multilin <- function(param.multilin, param.wagner, gen=100, traits=1:2, ...) {
+calibrate.multilin <- function(param.multilin, param.wagner, gen=2000, traits=1:2, ...) {
 	M.wagner <- M.from.wagner(param.wagner, gen=gen)
 	
 	Vm <- M.wagner[traits,traits]

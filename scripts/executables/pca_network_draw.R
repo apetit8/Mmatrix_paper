@@ -13,13 +13,13 @@ sims.dirs <- c(
                 # "../../simul/wagner/16g/c-1_-1","../../simul/wagner/16g/c1_1","../../simul/wagner/16g/c0_0",
                 # "../../simul/wagner/4g_pop500/c0_0","../../simul/wagner/4g_pop500/c1_1","../../simul/wagner/4g_pop500/c-1_-1",
                 # "../../simul/wagner/4g_pop10000/c0_0","../../simul/wagner/4g_pop10000/c1_1","../../simul/wagner/4g_pop10000/c-1_-1"
-                "../../simul/wagner/4g_cn_ab","../../simul/wagner/4g_cp_ab","../../simul/wagner/4g_fn_ab",
-                "../../simul/wagner/4g_fp_ab","../../simul/wagner/4g_no_ab","../../simul/wagner/4g_chn_ab",
-                "../../simul/wagner/4g_chp_ab","../../simul/wagner/4g_fhn_ab","../../simul/wagner/4g_fhp_ab"
+                # "../../simul/wagner/4g_cn_ab","../../simul/wagner/4g_cp_ab","../../simul/wagner/4g_fn_ab",
+                # "../../simul/wagner/4g_fp_ab","../../simul/wagner/4g_no_ab","../../simul/wagner/4g_chn_ab",
+                # "../../simul/wagner/4g_chp_ab","../../simul/wagner/4g_fhn_ab","../../simul/wagner/4g_fhp_ab"
+  "../../simul/fig_2/c0_0_free","../../simul/fig_2/c0_0abba","../../simul/fig_2/c0_0adda", "../../simul/fig_2/round_s"
                 )
-of        <- "controlled_W"
+of        <- "fig2"
 where     <- "wagner"
-sims.dir  <- sims.dirs[2:30]
 #######################
 
 pdf(sprintf("../../figures/%s/%s_ACP.pdf", where, of), width=6, height=6)
@@ -33,21 +33,7 @@ for (i in sims.dirs) {
     names(df)[names(df) == "df.topo$ang_M"] <- "M_angle"
     df[] <- lapply( df, as.numeric)
     df.topo[] <- lapply( df.topo, as.numeric)
-    
-    #Naming network cells (for 4 genes network)
-    names(df.topo)[names(df.topo) == "V9"] <- "B-A"
-    names(df.topo)[names(df.topo) == "V10"] <- "C-A"
-    names(df.topo)[names(df.topo) == "V11"] <- "D-A"
-    names(df.topo)[names(df.topo) == "V12"] <- "A-B"
-    names(df.topo)[names(df.topo) == "V14"] <- "C-B"
-    names(df.topo)[names(df.topo) == "V15"] <- "D-B"
-    names(df.topo)[names(df.topo) == "V16"] <- "A-C"
-    names(df.topo)[names(df.topo) == "V17"] <- "B-C"
-    names(df.topo)[names(df.topo) == "V19"] <- "D-C"
-    names(df.topo)[names(df.topo) == "V20"] <- "A-D"
-    names(df.topo)[names(df.topo) == "V21"] <- "B-D"
-    names(df.topo)[names(df.topo) == "V22"] <- "C-D"
-    
+
     #extraction of the data for the PCA
     dfx <- df.topo[,c(9,10,11,12,14,15,16,17,19,20,21,22)]
     dfy <- as.data.frame(df.topo$ang_M)

@@ -27,21 +27,7 @@ pdf(sprintf("../../figures/%s/%s_ACP.pdf", where, of), width=5, height=4)
 for (i in sims.dirs) {
   sims.dir <- list.dirs(i)[2:30]
       df.topo <- df.topo.raw(sims.dir)
-      
-      
-      names(df.topo)[names(df.topo) == "V9"] <- "A-B"
-      names(df.topo)[names(df.topo) == "V10"] <- "A-C"
-      names(df.topo)[names(df.topo) == "V11"] <- "A-D"
-      names(df.topo)[names(df.topo) == "V12"] <- "B-A"
-      names(df.topo)[names(df.topo) == "V14"] <- "B-C"
-      names(df.topo)[names(df.topo) == "V15"] <- "B-D"
-      names(df.topo)[names(df.topo) == "V16"] <- "C-A"
-      names(df.topo)[names(df.topo) == "V17"] <- "C-B"
-      names(df.topo)[names(df.topo) == "V19"] <- "C-D"
-      names(df.topo)[names(df.topo) == "V20"] <- "D-A"
-      names(df.topo)[names(df.topo) == "V21"] <- "D-B"
-      names(df.topo)[names(df.topo) == "V22"] <- "D-C"
-      
+
       dfx <- df.topo[,c(9,10,11,12,14,15,16,17,19,20,21,22)]
       dfy <- as.data.frame(df.topo$ang_M)
       df <-as.data.frame(cbind(dfx,dfy))

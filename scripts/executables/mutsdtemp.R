@@ -2,21 +2,18 @@ source("../functions_R/mutsd.R")
 
 simevolv =("../../../simevolv/bin/Release/Simul_Prog")
 
-sims.dir       = ("../../simul/Multilinear/mutsd")
+sims.dir       = ("../../simul/fig_1")
 
-multi.template = file.path(sims.dir, "multilinear.temp")
-wagner.template = file.path(sims.dir, "wagner.temp")
+i <- c(1,2,3)
 
-calibrate.wag.on.multi(param.multilin=multi.template, param.wagner=wagner.template)
-
-
-
-calibrate.multilin(param.multilin=multi.template, param.wagner=wagner.template)
-
-
-
-system(paste(sim.path, "-p", pff, "-o", off, sep=" "))
-
+for (j in i) {
+  
+  multi.template = file.path(sims.dir, sprintf("m2/angle_%s.par", j))
+  wagner.template = file.path(sims.dir, sprintf("w2/angle_%s.par", j))
+  
+  #calibrate.wag.on.multi(param.multilin=multi.template, param.wagner=wagner.template)
+  calibrate.multilin(param.multilin=multi.template, param.wagner=wagner.template)
+}
 
 
 

@@ -242,7 +242,7 @@ plot.features.time <- function(data.dir, what="size", xlim=NULL, ylim=NULL, xlab
 }
 
 
-plot.features.onS <- function(data.dirs, what="angle", xlim=NULL, ylim=NULL, xlab="S", ylab=what, 
+plot.features.onS <- function(data.dirs, what="angle", xlim=NULL, ylim=NULL, xlab="S", ylab="M", 
                               mat.col=c(G="royalblue3", M="darkolivegreen4", S="orange"), 
                               mat.pch=c(G=1, M=16, Gm=17, Mm=17), generation=10000,
                               all.reps=FALSE, Gell=FALSE, ...) {
@@ -337,15 +337,9 @@ plot.features.onS.MvsW <- function(data.dirs1, data.dirs2, what="angle", xlim=NU
 }
 
 
-
-
-
-
-
-
-oneplot.allellipse <- function(data.dirs, xlim=NULL, ylim=NULL, xlab="Trait 1", ylab="Trait2", 
+oneplot.allellipse <- function(data.dirs, xlim=NULL, ylim=NULL, xlab="Trait 1", ylab="Trait 2", 
                                S.factor=0.00005, M.factor=1,  G.factor=1, 
-                               asp=1, all.gen=FALSE, all.reps=FALSE, Gell=TRUE,...) {
+                               asp=1, all.gen=FALSE, all.reps=FALSE, ...) {
   plot(NULL, xlim=xlim, ylim=ylim, xlab=xlab, ylab=ylab, asp=asp,  ...)
   
   for (data.dir in data.dirs) {
@@ -355,9 +349,9 @@ oneplot.allellipse <- function(data.dirs, xlim=NULL, ylim=NULL, xlab="Trait 1", 
     #browser()
     rp <- read.param(param.file)
     if (rp$TYPE_ARCHI %in% c("additive", "multilinear")) {
-      mat.col=c(G="dodgerblue4", M="green", S="orange") }
+      mat.col=c(M="green", S="orange") }
     if (rp$TYPE_ARCHI %in% c("m2")) {
-      mat.col=c(G="dodgerblue4", M="darkolivegreen4", S="orange") }
+      mat.col=c(M="darkolivegreen4", S="orange") }
     
     stopifnot(length(data.files) >0, length(param.file) == 1)
     
@@ -372,40 +366,16 @@ oneplot.allellipse <- function(data.dirs, xlim=NULL, ylim=NULL, xlab="Trait 1", 
         for (simul in simuls) {
           phen.mean <- extract.P.mean(simul, gen=gen)
           
-          
-          if (Gell!=TRUE) {
             draw.ellipses(
               M.mat=extract.M.matrix(simul, gen=gen),
               S.mat=NULL, G.centre=phen.mean, M.factor=M.factor, S.factor=S.factor,
               mat.col=makeTransparent(mat.col), xlab=xlab, ylab=ylab, xlim=xlim, ylim=ylim,
               add=TRUE, ...)
             first <- FALSE          
-          }
-          if (Gell){
-            draw.ellipses(
-              G.mat=extract.P.matrix(simul, gen=gen),
-              M.mat=extract.M.matrix(simul, gen=gen),
-              S.mat=NULL, G.centre=phen.mean, M.factor=M.factor, S.factor=S.factor, G.factor=G.factor,
-              mat.col=makeTransparent(mat.col), xlab=xlab, ylab=ylab, xlim=xlim, ylim=ylim,
-              add=TRUE, ...)
-            first <- FALSE
-          }
-        }
+            }
       }
       # Mean over replicates
       phen.mean <- extract.P.mean(simuls.mean, gen=gen)
-      if (Gell){
-        draw.ellipses(
-          G.mat=extract.P.matrix(simuls.mean, gen=gen),
-          M.mat=extract.M.matrix(simuls.mean, gen=gen),
-          S.mat=if(gen==mygens[1]) extract.S.matrix(param.file) else NULL, 
-          G.centre=phen.mean, S.centre=extract.theta(param.file), 
-          M.factor=M.factor, S.factor=S.factor,  G.factor=G.factor,
-          mat.col=mat.col, xlab=xlab, ylab=ylab, xlim=xlim, ylim=ylim,
-          add=TRUE, ...)
-        legend("topleft", lty=1, col=mat.col, legend=c(paste0("G", if (G.factor != 1) paste0(" (x ", G.factor, ")")), paste0("M", if (M.factor != 1) paste0(" (x ", M.factor, ")")), paste0("S", if (S.factor != 1) paste0(" (x ", S.factor, ")"))))
-      }
-      if (Gell!=TRUE){
         draw.ellipses(
           M.mat=extract.M.matrix(simuls.mean, gen=gen),
           S.mat=if(gen==mygens[1]) extract.S.matrix(param.file) else NULL,
@@ -413,10 +383,8 @@ oneplot.allellipse <- function(data.dirs, xlim=NULL, ylim=NULL, xlab="Trait 1", 
           M.factor=M.factor, S.factor=S.factor,
           mat.col=mat.col, xlab=xlab, ylab=ylab, xlim=xlim, ylim=ylim,
           add=TRUE, ...)
-        legend("topleft", lty=1, col=mat.col, legend=c(paste0(paste0("M", if (M.factor != 1) paste0(" (x ", M.factor, ")")), paste0("S", if (S.factor != 1) paste0(" (x ", S.factor, ")")))))
-        
-      }
+        legend("topleft", lty=1, col=c("darkolivegreen4", "green", "orange"),
+               legend=c(paste0("M wagner", if (M.factor != 1) paste0(" (x ", M.factor, ")")), paste0("M multilinear", if (M.factor != 1) paste0(" (x ", M.factor, ")")),paste0("S", if (S.factor != 1) paste0(" (x ", S.factor, ")"))))
     }
   }
-  
 }
