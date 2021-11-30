@@ -5,7 +5,7 @@ library(factoextra)
 library(gridExtra)
 library(matrixStats)
 #######################
-sims.dirs <- list.dirs("../../simul/fig_2/c0_0_free2")
+sims.dirs <- list.dirs("../../simul/fig_2/se_0_ab")
 sims.dir  <- sims.dirs[2:length(sims.dirs)]
 of        <- "topo_0_1.5"
 #######################

@@ -8,18 +8,9 @@ of        <- "fig1"
 modulo <- pi
 #####################
 
-
-M.factor <- 500
-G.factor <- 0.25
-#S.factor <- 0.022 #Multilinear
-#S.factor <- 0.01 #Multilinear scaled 0_1
-#S.factor <- 0.0008 #Wagner
-S.factor <- 1
-
-#Calcul des evolvability for all angles at the same time
 df.m.s1 <- data.frame()
 for (i in angle) {
-  
+
   sims.dir  <- list.files(path=sims.dirs, pattern=sprintf("angle__%s.par", i), full.names=TRUE)
   df <- df.raster.map(sims.dir, all.gen=TRUE)
   pop <- str_split(df$data.dir, "../../simul/fig_1/", n=2, simplify = TRUE)
@@ -57,45 +48,13 @@ sprintf("\u03BE\u03B1 Multilinear = %s", m_Eva)
 gg <- ggplot(df.m.s1, aes(x=Gen, y=ang_M))+
   geom_smooth(aes(color=V10, linetype = as.character(round(ang_S, 4))), alpha = 0.1, method = AngleSmooth, span=0.15, level = 1)+
   geom_point(aes(x=10000, y=round(ang_S, 4)), size=2)+
-  labs(title = ("M direction through generations"), x="Generations", y="M direction")+
+  labs(title = ("M correlation evolution for different initial correlation through generations"), x="Generations", y="M orientation")+
   labs(linetype = "S direction", color ="Model")+
   scale_linetype_manual(labels = c("0","pi/8", "pi/2"), values = c(3,2,1))+
-  scale_color_manual(labels = c("Multilinear", "Wagner"), values = c("darkblue", "yellowgreen"))
+  scale_color_manual(labels = c("Multilinear", "Wagner"), values = c("cornflowerblue", "orange"))
 gg <- fracAx(p=gg, y=TRUE, x=FALSE, symbol = "pi")
 
 
 
 
-pdfname   <- print(sprintf("../../figures/%s_1.pdf", of))
-# #Draw ellipses
-cairo_pdf(pdfname, width=8.5, height=2.8)
-layout(t(1:3))
 
-
-# j <- 1
-for (i in angle) {
-#   j <- j+1
-#       sims.dirs.w <- list.dirs("../../simul/fig_1/w2")
-#       sims.dir.w <- sims.dirs.w[j]
-#       mse.w <- round((1 - mean(diff.ms.by.mean(sims.dir.w, modulo=modulo)^2)/((pi^2)/12)), 2)
-#       sims.dirs.m <- list.dirs("../../simul/fig_1/m_2000")
-#       sims.dir.m <- sims.dirs.m[j]
-#       mse.m <- round((1 - mean(diff.ms.by.mean(sims.dir.m, modulo=modulo)^2)/((pi^2)/12)), 2)
-
-  sims.dir  <- list.files(path=sims.dirs, pattern=sprintf("angle__%s.par", i), full.names=TRUE)
-  par(mar = c(2, 2, 2, 2))
-  oneplot.allellipse(sims.dir, G.factor=G.factor, S.factor=S.factor, M.factor=M.factor,asp=1, 
-                     # main= paste0("\u03BE", "\u03B1", sprintf(" : m = %s, w = %s", mse.m, mse.w)),
-                     xlim=c(-7,7), ylim=c(-7,7), all.reps=FALSE, labels = FALSE,
-                    yaxt = "n", xaxt = "n",mgp = c(1, 1, 0))
-}
-
-dev.off()
-
-
-print("Ellipses done !")
-
-pdfname2   <- print(sprintf("../../figures/%s_2.pdf", of))
-cairo_pdf(pdfname2, width=6.8, height=3.2)
-  gg
-dev.off()

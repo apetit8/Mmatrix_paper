@@ -6,6 +6,7 @@ library(rlist)
 library(ggpubr)
 library(tidyverse)
 library(RColorBrewer)
+library(data.table)
 
 global.model <- list(
 	connect.threshold = 0.01
@@ -375,18 +376,15 @@ df.topo.raw<- function(sims.dir, w_of_4=TRUE, network=TRUE){
     mytopos <- lapply(files, function(ff) {
       #print(ff)
       tt <- read.table(ff, header=TRUE)
-      if (network==TRUE){
-        Wmat <- extract.W.matrix(tt)
-      }
-      #"what" of G and M
+      #M data
       gen <-tt[nrow(tt),"Gen"]
-      P.mat <- extract.P.matrix(tt, gen=gen)
       M.mat <- extract.M.matrix(tt, gen=gen)
       M.feat1 <- matrix.features(M.mat,n.genes=2)[["eccentricity"]][1] #M matrix
       M.feat2 <- matrix.features(M.mat,n.genes=2)[["angle"]][1] #M matrix
       M.feat3 <- matrix.features(M.mat,n.genes=2)[["size"]][1] #M matrix
       mean.ma.df <- M.feat2
       if (network==TRUE){
+        Wmat <- extract.W.matrix(tt) #W data
         new <- c(ff, S.ref1, S.ref2, S.ref3, M.feat1, M.feat2, M.feat3, mean.ma.df, Wmat )
       }
       if (network!=TRUE){
@@ -396,7 +394,7 @@ df.topo.raw<- function(sims.dir, w_of_4=TRUE, network=TRUE){
       #create a list of data
     })
     newt <- ldply(mytopos) # create a data.frame for i
-    newt[,8] <- mean.angle.2pi(as.numeric(newt[,8]))
+    newt[,8] <- mean.angle.pi(as.numeric(newt[,8]))
     simul.df <- rbind(simul.df, newt) #paste the data of i in a data.frame with the others
   }
   simul.df[,2:8] <- lapply( simul.df[,2:8], as.numeric)
@@ -427,4 +425,48 @@ df.topo.raw<- function(sims.dir, w_of_4=TRUE, network=TRUE){
     simul.df[,9:24] <- lapply( simul.df[,9:24], as.numeric)
   }
   return(simul.df)
+}
+
+df.raster.map <- function(sims.dir, modulo=pi, all.gen=FALSE){
+  simul.df <- data.frame()
+  filedata <- data.frame()
+  #collect all the data
+  for (i in sims.dir) {
+    files     <- list.files(path = i, full.names=TRUE, pattern = "\\.txt$")
+    param.file.all = list.files(path=i, pattern="\\.par$", full.names=TRUE)
+    param.file <- as.character(param.file.all[1])
+    stopifnot(length(files) >0)
+    
+    #read param.par to associate each simu with S properties
+    rp <- read.param(param.file)
+    mut.rate <- 2*rp$GENET_MUTRATES
+    if (rp$GENET_MUTTYPE=="locus") mut.rate <- mut.rate*rp$GENET_NBLOC
+    S.ref2 <- matrix.features(extract.S.matrix(param.file), n.genes=2)[["angle"]][1]
+    
+    mytopos <- lapply(files, function(ff) {
+      #print(ff)
+      tt <- read.table(ff, header=TRUE) 
+      mygens <-rev(if (all.gen==TRUE) tt[,"Gen"] else tt[nrow(tt),"Gen"])
+      for (gen in mygens) {
+        phen.mean <- extract.P.mean(tt, gen=gen)
+        M.mat <- extract.M.matrix(tt, gen=gen)
+        M.feat2 <- matrix.features(M.mat,n.genes=2)[["angle"]][1] #M angle
+        mean.ma.df <- M.feat2
+        data.gen <- c(ff, gen, S.ref2, M.feat2, phen.mean[1],phen.mean[2],mean.ma.df )
+        filedata <- rbind(filedata, data.gen)
+        #create a list of data
+      }
+      return(as.list(filedata))
+    })
+    newt <- as.data.frame(rbindlist(mytopos, use.names=FALSE))
+    newt[,7] <- mean.angle.pi(as.numeric(newt[,7]))
+    setnames(newt, 1:7, c("data.dir", "Gen","ang_S","ang_M","P_mean_A","P_mean_B","mean_ang_m"))
+    # newt <- ldply(mytopos) # create a data.frame for mytopos
+    simul.df <- rbind(simul.df, newt) #paste the data of i in a data.frame with the others
+  }
+  simul.df[,2:7] <- lapply( simul.df[,2:7], as.numeric)
+  sq_dist <- 1 - ((modulo.all(simul.df$ang_M-simul.df$ang_S, modulo = modulo))^2)/((pi^2)/12)
+  simul.df <- as.data.frame(cbind(simul.df, sq_dist))
+  return(simul.df)
+  
 }

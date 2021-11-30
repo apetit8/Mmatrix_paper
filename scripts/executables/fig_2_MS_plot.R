@@ -13,7 +13,10 @@ sims.dirs <- c(
                     # "../../simul/wagner/4g_fp_ab","../../simul/wagner/4g_no_ab","../../simul/wagner/4g_chn_ab",
                     # "../../simul/wagner/4g_chp_ab","../../simul/wagner/4g_fhn_ab","../../simul/wagner/4g_fhp_ab"
                     # "../../simul/fig_2/c0_0_free","../../simul/fig_2/c0_0abba","../../simul/fig_2/c0_0adda", "../../simul/fig_2/round_s"
-  "../../simul/fig_2/c0_0_free","../../simul/fig_2/c0_0abba","../../simul/fig_2/c0_0adda", "../../simul/fig_2/c0_0ab"
+  "../../simul/fig_2/se_0","../../simul/fig_2/se_0_abba","../../simul/fig_2/se_0_ab", 
+  "../../simul/fig_2/se_0_ba",  "../../simul/fig_2/se_0_adda", "../../simul/fig_2/se_0_ad",
+  "../../simul/fig_2/se_0_da","../../simul/fig_2/se_0_adacbdbc","../../simul/fig_2/se_0_dadbcacb",
+  "../../simul/fig_2/se_0_daca" 
   )
 of        <- "fig2_Ow_modulopi"
 what      <- "angle"

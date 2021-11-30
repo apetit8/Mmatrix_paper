@@ -4,13 +4,14 @@ source("../functions_R/tools.R")
 #This script compares the quality of the M-S alignment between populations.
 
 #######################
-sims.dirs1 <- list.dirs("../../simul/fig_2/round_s")
-sims.dir1  <- sims.dirs1[2:32]
+sims.dirs1 <- list.dirs("../../simul/fig_2/se_0_ad")
+sims.dir1  <- sims.dirs1[2:length(sims.dirs1)]
 #
-sims.dirs2 <- list.dirs("../../simul/fig_2/round_s3")
-sims.dir2  <- sims.dirs2[2:30]
+sims.dirs2 <- list.dirs("../../simul/fig_2/se_0_da")
+sims.dir2  <- sims.dirs2[2:length(sims.dirs2)]
 #
 of        <- "fig2"
+modulo = pi
 #######################
 
 df.topo1 <- df.topo.raw(sims.dir1, network=FALSE)
@@ -21,20 +22,22 @@ df.topo2 <- df.topo.raw(sims.dir2, network=FALSE)
 ks.test(df.topo1$ang_M, df.topo2$ang_M)
 #If the p-value <0.05, there is a statistical difference between the M angle distribution of the simulations.
 
+diff1 <- (modulo.all(df.topo1$ang_M-df.topo1$ang_S, modulo=modulo))
+diff2 <- (modulo.all(df.topo2$ang_M-df.topo2$ang_S, modulo=modulo))
+
 #MSE comparison
-mean(angle.diff(df.topo1$ang_M, df.topo1$ang_S)^2)
-hist(angle.diff(df.topo1$ang_M, df.topo1$ang_S)^2)
-mean(angle.diff(df.topo2$ang_M, df.topo2$ang_S)^2)
-hist(angle.diff(df.topo2$ang_M, df.topo2$ang_S)^2)
+mean(diff1^2)
+hist(diff1^2)
+mean(diff2^2)
+hist(diff2^2)
 #The pop with the lower mean has the best alignment.
 
 #MSE comparison with Wilcoxon test (non parametric t-test as the distribution is not normal) :
-wilcox.test((angle.diff(df.topo1$ang_M, df.topo1$ang_S)^2),(angle.diff(df.topo2$ang_M, df.topo2$ang_S)^2))
+wilcox.test((diff1^2),(diff2^2))
 #A significant p-value indicate that there is a significant difference between the two alignment quality.
 
-#appears more appropriate
 #Kolmogorov-Smirnov test : compare distributions (non parametric t-test as the distribution is not normal)
-ks.test((angle.diff(df.topo1$ang_M, df.topo1$ang_S)^2),(angle.diff(df.topo2$ang_M, df.topo2$ang_S)^2))
+ks.test((diff1^2),(diff2^2))
 #A significant p-value indicate that there is a significant difference between the two alignment quality.
 
 

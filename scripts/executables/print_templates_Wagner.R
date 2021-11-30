@@ -18,10 +18,17 @@ sims.dirs <- c(
   # "../../simul/fig_2/round_s3"
   # "../../simul/fig_3/se1_ab_neg","../../simul/fig_3/se_1","../../simul/fig_3/se_-1", "../../simul/fig_3/se_0",
   # "../../simul/witness_0w"
+  # "../../simul/fig_2/se_0_da","../../simul/fig_2/se_0_ad","../../simul/fig_2/se_0_ba"
+  # "../../simul/fig_2/se_0_daca","../../simul/fig_2/se_0_dadbcacb"
+  # "../../simul/fig_2/se_0_adacbdbc"
+  # "../../simul/fig_2/se_0_o_dacb"
+  # "../../simul/fig_2/se_o_abbacddc"
+  # "../../simul/supp_data/se0_8g", "../../simul/supp_data/se0_12g"
+  "../../simul/supp_data/se0_mutrate_0.01", "../../simul/supp_data/se0_mutrate_0.001","../../simul/supp_data/se0_mutrate_0.5"
                 )
 
 #Properties of S for Wagner model :
-def.e <- 1  #0.12 #1 #eccentricity
+def.e <- 0.12 #1 #eccentricity
 def.s <- 10 #size
 
 #####################
@@ -29,8 +36,8 @@ def.s <- 10 #size
 #This loop creates a parameter template for each angle given.
 
 #Angle values :
-# values <- list(-1.5, 1.5,-1.4, 1.4, -1, 1, -0.5, 0.5, -0.7, -0.2, 0.2, -0.3, 0.3, -0.4, 0.4, 0, -0.6, 0.6, -0.9, 0.9, 0.7, -0.8, 0.8, -1.1, 1.1, -1.2, 1.2,-1.3, 1.3, -1.4, 1.4,-0.1, 0.1)
-values <- list(-1.5, 1.5)
+values <- list(-1.5, 1.5,-1.4, 1.4, -1, 1, -0.5, 0.5, -0.7, -0.2, 0.2, -0.3, 0.3, -0.4, 0.4, 0, -0.6, 0.6, -0.9, 0.9, 0.7, -0.8, 0.8, -1.1, 1.1, -1.2, 1.2,-1.3, 1.3, -1.4, 1.4,-0.1, 0.1)
+
 
 for (sims.dir in sims.dirs) {
   param.template = file.path(sims.dir, "template.temp")
@@ -39,4 +46,4 @@ for (sims.dir in sims.dirs) {
     param.from.sel.features(param.template, param.file, angle=a, size=def.s, eccentricity=def.e)
   }
 }
-print("Templates done !")
+print("Parameter files done !")

@@ -39,11 +39,11 @@ draw.ellipses <- function(G.mat=NULL, M.mat=NULL, S.mat=NULL, G.centre=c(0,0), M
 plot.ellipse.dir <- function(data.dir, xlim=NULL, ylim=NULL, xlab="Trait 1", ylab="Trait2", 
                          S.factor=0.00005, M.factor=1, G.factor=1,
                          mat.col=c(G="dodgerblue4", M="darkolivegreen4", S="orange"), 
-                         all.gen=FALSE, all.reps=FALSE,  Gell=TRUE, ...) {
-  data.files = list.files(path=data.dir, pattern="simul.*.txt$", full.names=TRUE)
+                         all.gen=FALSE, all.reps=FALSE,  Gell=TRUE, pattern_simu="\\.txt$", ...) {
+  data.files = list.files(path=data.dir, pattern=pattern_simu, full.names=TRUE)
   param.file = list.files(path=data.dir, pattern="*.par",        full.names=TRUE)
-  
-  stopifnot(length(data.files) >0, length(param.file) == 1)
+# stopifnot(length(data.files) >0, length(param.file) == 1)
+  stopifnot(length(data.files) >0)
   
   simuls = lapply(data.files, function(x) read.table(x, header=TRUE)) #import list
   simuls.mean = replicate.mean(simuls)
@@ -70,8 +70,8 @@ plot.ellipse.dir <- function(data.dir, xlim=NULL, ylim=NULL, xlab="Trait 1", yla
       if (Gell) {
           G.mat=extract.P.matrix(simuls.mean, gen=gen)},
           M.mat=extract.M.matrix(simuls.mean, gen=gen),
-          S.mat=if(gen==mygens[1]) extract.S.matrix(param.file) else NULL, 
-          G.centre=phen.mean, S.centre=extract.theta(param.file), 
+          S.mat=if(gen==mygens[1]) extract.S.matrix(param.file[1]) else NULL, 
+          G.centre=phen.mean, S.centre=extract.theta(param.file[1]), 
           M.factor=M.factor, S.factor=S.factor, G.factor=G.factor,
           mat.col=mat.col, xlab=xlab, ylab=ylab, xlim=xlim, ylim=ylim,
           add=!(!all.reps && gen==mygens[1]), ...)
@@ -349,9 +349,9 @@ oneplot.allellipse <- function(data.dirs, xlim=NULL, ylim=NULL, xlab="Trait 1", 
     #browser()
     rp <- read.param(param.file)
     if (rp$TYPE_ARCHI %in% c("additive", "multilinear")) {
-      mat.col=c(M="green", S="orange") }
+      mat.col=c(M="darkblue", S="orange") }
     if (rp$TYPE_ARCHI %in% c("m2")) {
-      mat.col=c(M="darkolivegreen4", S="orange") }
+      mat.col=c(M="yellowgreen", S="orange") }
     
     stopifnot(length(data.files) >0, length(param.file) == 1)
     
@@ -383,7 +383,7 @@ oneplot.allellipse <- function(data.dirs, xlim=NULL, ylim=NULL, xlab="Trait 1", 
           M.factor=M.factor, S.factor=S.factor,
           mat.col=mat.col, xlab=xlab, ylab=ylab, xlim=xlim, ylim=ylim,
           add=TRUE, ...)
-        legend("topleft", lty=1, col=c("darkolivegreen4", "green", "orange"),
+        legend("topleft", lty=1, box.lty=0, bg="transparent", col=c("yellowgreen", "darkblue", "orange"),
                legend=c(paste0("M wagner", if (M.factor != 1) paste0(" (x ", M.factor, ")")), paste0("M multilinear", if (M.factor != 1) paste0(" (x ", M.factor, ")")),paste0("S", if (S.factor != 1) paste0(" (x ", S.factor, ")"))))
     }
   }

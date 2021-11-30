@@ -1,7 +1,7 @@
 source("../functions_R/figure_tools.R")
 
 #####################
-sims.dirs <- c("../../simul/fig_2/c0_0adda"
+sims.dirs <- c("../../simul/fig_2/c0_0adda",
                "../../simul/fig_2/round_s"
                )
 #angle = c(-0.2, 1.2)
