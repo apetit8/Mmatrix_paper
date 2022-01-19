@@ -1,99 +1,81 @@
-source("../functions_R/network.R")
-source("../functions_R/tools.R")
-source("../functions_R/ggplot2_custom_functions.R")
+source("../functions_R/All_functions.R")
 ########################################################################################################################
 sims.dirs <- list.dirs(
-  "../../simul/fig_3/raster_initcorrnul", recursive = FALSE
+  "../../simul/fig_3/rnul", recursive = FALSE
 )
 of        <- "fig3"
 modulo <- pi
 #####################
 
-df.all <- df.opt.map(sims.dirs, modulo=modulo)
+df.rnul <- df.opt.map(sims.dirs, modulo=modulo)
 
-g1 <- ggplot(df.all, aes(x=P_mean_A, y=P_mean_B, z=V11))+
-  coord_fixed(ratio = 1, xlim = c(-1.25,1.25), ylim = c(-1.25,1.25), expand = TRUE, clip = "on")+
-  stat_summary_2d(breaks = c(-1.25,-0.75, -0.25, 0.25, 0.75, 1.25), fun = "mean")+
-  scale_fill_viridis_c(option = "plasma", limits=c(-0.05, 1))+
+g1 <- ggplot(df.rnul, aes(x=P_mean_A, y=P_mean_B, z=sq_dist))+
+  coord_fixed(ratio = 1, xlim = c(-1.125,1.125), ylim = c(-1.125,1.125), expand = TRUE, clip = "on")+
+  stat_summary_2d(breaks = seq(-1.125, 1.125, by = 0.25), fun = "mean", show.legend = FALSE)+
+  scale_fill_viridis_c(option = "plasma", limits=c(-0.02, 1))+
   geom_point(aes(y=0, x=0))+
-  labs(title =  ("B/ Alignment score for different optimum\nphenotypes with correlation of selection"), x="Expression gene A", y="Expression gene B")+
+  labs(title =  ("A/ Without initial AB regulation"), x="Expression gene A", y="Expression gene B")+
   labs(fill = expression("\u03BE\u03B1"))
-
-######################
-sims.dirs.1 <- list.dirs(
-  "../../simul/fig_3/round_map", recursive = FALSE
-)
-modulo <- pi
-#####################
-
-df.all1 <- df.opt.map(sims.dirs.1)
-
-
-g2 <- ggplot(df.all1, aes(x=P_mean_A, y=P_mean_B, z=ang_M))+
-  coord_fixed(ratio = 1, xlim = c(-1.25,1.25), ylim = c(-1.25,1.25), expand = TRUE, clip = "on")+
-  sstat_summary_2d(breaks = c(-1.25,-0.75, -0.25, 0.25, 0.75, 1.25), fun = st_dev_abs)+
-  # stat_summary_2d(breaks = c(-1.25,-0.75, -0.25, 0.25, 0.75, 1.25), fun = Angle_Mean)+
-  scale_fill_viridis_c(option = "mako")+
-  geom_point(aes(y=0, x=0))+
-  labs(title = ("A/ Angle SD for different optimum \nphenotypes with no correlation of selection"), x="Expression gene A", y="Expression gene B")+
-  labs(fill = "Ma sd")
 
 ######################
 sims.dirs.5 <- list.dirs(
-  "../../simul/fig_3/raster_initcorrneg", recursive = FALSE
+  "../../simul/fig_3/rneg", recursive = FALSE
 )
 modulo <- pi
 #####################
 
-df.all5 <- df.opt.map(sims.dirs.5)
+df.rneg <- df.opt.map(sims.dirs.5)
 
-g3 <-   ggplot(df.all5, aes(x=P_mean_A, y=P_mean_B, z=V11))+
-  coord_fixed(ratio = 1, xlim = c(-1.25,1.25), ylim = c(-1.25,1.25), expand = TRUE, clip = "on")+
-  stat_summary_2d(breaks = c(-1.25,-0.75, -0.25, 0.25, 0.75, 1.25), fun = "mean")+
-  # scale_fill_viridis_c(option = "plasma")+
-  scale_fill_viridis_c(option = "plasma", limits=c(-0.05, 1))+
-  labs(title =  ("C/ Alignment score for different optimum\nphenotypes with a negative initial correlation"), x="Expression gene A", y="Expression gene B")+
+g3 <-   ggplot(df.rneg, aes(x=P_mean_A, y=P_mean_B, z=sq_dist))+
+  coord_fixed(ratio = 1, xlim = c(-1.125,1.125), ylim = c(-1.125,1.125), expand = TRUE, clip = "on")+
+  stat_summary_2d(breaks = seq(-1.125, 1.125, by = 0.25), fun = "mean")+
+  scale_fill_viridis_c(option = "plasma", limits=c(-0.02, 1))+
+  labs(title =  ("C/ Negative initial AB regulation"), x="Expression gene A", y="Expression gene B")+
   labs(fill = expression("\u03BE\u03B1"))
+g3
 
 ######################
 sims.dirs.6 <- list.dirs(
-  "../../simul/fig_3/raster_initcorrpos", recursive = FALSE
+  "../../simul/fig_3/rpos2", recursive = FALSE
 )
 modulo <- pi
 #####################
 
-df.all6 <- df.opt.map(sims.dirs.6)
+df.rpos<- df.opt.map(sims.dirs.6)
 
-g4 <- ggplot(df.all6, aes(x=P_mean_A, y=P_mean_B, z=V11))+
-  coord_fixed(ratio = 1, xlim = c(-1.25,1.25), ylim = c(-1.25,1.25), expand = TRUE, clip = "on")+
-  stat_summary_2d(breaks = c(-1.25,-0.75, -0.25, 0.25, 0.75, 1.25), fun = "mean")+
-  scale_fill_viridis_c(option = "plasma", limits=c(-0.05, 1))+
-  labs(title =  ("D/ Alignment score for different optimum\nphenotypes with a positive initial correlation"), x="Expression gene A", y="Expression gene B")+
+g4 <- ggplot(df.rpos, aes(x=P_mean_A, y=P_mean_B, z=sq_dist))+
+  coord_fixed(ratio = 1, xlim = c(-1.125,1.125), ylim = c(-1.125,1.125), expand = TRUE, clip = "on")+
+  stat_summary_2d(breaks = seq(-1.125, 1.125, by = 0.25), fun = "mean", show.legend = FALSE)+
+  scale_fill_viridis_c(option = "plasma", limits=c(-0.02, 1))+
+  labs(title =  ("B/ Positive initial AB regulation"), x="Expression gene A", y="Expression gene B")+
   labs(fill = expression("\u03BE\u03B1"))
-
+g4
 
 #################################
 # PDF
 #################################
 
-pdfname   <- print(sprintf("../../figures/%s.pdf", of))
+pdfname   <- print("../../figures/fig3-1.pdf")
 cairo_pdf(pdfname, width=9, height=8)
-
-lay <- rbind(c(1,2),c(3,4))
-
 grid.arrange(
-  g2,g1,g3,g4,
+  g1,g3,g4,
   ncol = 2,
   nrow = 2,
   widths = c(1,1),
-  layout_matrix = lay,
   clip = FALSE
 )
-
 dev.off()
 
-
-
+pdfname   <- print("../../figures/fig3.pdf")
+cairo_pdf(pdfname, width=13, height=4.5)
+grid.arrange(
+  g1,g4,g3,
+  ncol = 3,
+  nrow = 1,
+  widths = c(1,1,1.22),
+  clip = FALSE
+)
+dev.off()
 
 # library("DataCombine")
 # dftest <- grepl.sub(data=df.all, pattern="FITNESS_OPTIMUM-0.5-FITNESS_OPTIMUM2-0.5", Var="V10", keep.found = TRUE)
@@ -106,3 +88,45 @@ dev.off()
 # 
 # mean(dftest$V11)
 # mean(dftest$sq_dist)
+
+
+
+######################
+sims.dirs.1 <- list.dirs(
+  "../../simul/fig_3/rround", recursive = FALSE
+)
+modulo <- pi
+#####################
+
+df.rround <- df.opt.map(sims.dirs.1)
+
+
+g2 <- ggplot(df.rround, aes(x=P_mean_A, y=P_mean_B, z=ang_M))+
+  coord_fixed(ratio = 1, xlim = c(-1.125,1.125), ylim = c(-1.125,1.125), expand = TRUE, clip = "on")+
+  stat_summary_2d(breaks = seq(-1.125, 1.125, by = 0.25), fun = st_dev_abs)+
+  # stat_summary_2d(breaks = c(-1.25,-0.75, -0.25, 0.25, 0.75, 1.25), fun = Angle_Mean)+
+  scale_fill_viridis_c(option = "mako", limits=c(0, 1))+
+  geom_point(aes(y=0, x=0))+
+  labs(title = ("A/ Angle SD for different optimum \nphenotypes with no correlation of selection"), x="Expression gene A", y="Expression gene B")+
+  labs(fill = "Ma sd")
+
+g22 <- ggplot(df.rround, aes(x=P_mean_A, y=P_mean_B, z=ang_M))+
+  coord_fixed(ratio = 1, xlim = c(-1.125,1.125), ylim = c(-1.125,1.125), expand = TRUE, clip = "on")+
+  stat_summary_2d(breaks = seq(-1.125, 1.125, by = 0.25), fun = Angle_Mean)+
+  scale_fill_viridis_c(option = "mako", limits=c(-pi/2, pi/2))+
+  geom_point(aes(y=0, x=0))+
+  labs(title = ("A/ Angle mean for different optimum \nphenotypes with no correlation of selection"), x="Expression gene A", y="Expression gene B")+
+  labs(fill = "Mean \u03B1")
+g22
+
+
+pdfname   <- print("../../figures/fig3-2.pdf")
+cairo_pdf(pdfname, width=9, height=4)
+grid.arrange(
+  g2,g22,
+  ncol = 2,
+  nrow = 1,
+  widths = c(1,1),
+  clip = FALSE
+)
+dev.off()
