@@ -99,17 +99,17 @@ generate.param.list <- function(template, param.list, reps=1, launchfile=NA, sep
   
   templ <- read.param(template)
   param.grid <- do.call(expand.grid, param.list)
-  names.grid <- do.call(expand.grid, lapply(param.list, function(pp) if (is.null(names(pp))) as.numeric(pp) else names(pp)))
+  param.grid[,3] <- as.character(param.grid[,3] )
+  names.grid <- do.call(expand.grid,  list(lapply(param.list, function(pp) if (is.null(names(pp))) as.character(pp) else  as.character(pp))))
   colnames(names.grid) <- paste0(colnames(names.grid), ifelse(vec.indx == 1, "", vec.indx))
   rownames(param.grid) <- do.call(paste, c(lapply(colnames(names.grid), function(nn) paste(nn, names.grid[,nn], sep=sep[1])), list(sep=sep[2])))
-  
   for (i in seq_len(nrow(param.grid))) {
     mypar <- templ
     for (j in seq_along(names(param.list))) {
       if (!names(param.list)[j] %in% names(mypar))
         stop("Error: parameter ", names(param.list)[j], " is not in file ", template, ".")
       if (length(mypar[[names(param.list)[j]]]) < vec.indx[j])
-        stop("Error: parameter ", names(param.list)[j], " does not have ", vec.indx[j], "elements.")
+      stop("Error: parameter ", names(param.list)[j], " does not have ", vec.indx[j], "elements.")
       mypar[[names(param.list)[j]]][vec.indx[j]] <- param.grid[i,j]
     }
     parfile <- paste0(param.dir, "/", rownames(param.grid)[i], param.ext)
@@ -118,11 +118,22 @@ generate.param.list <- function(template, param.list, reps=1, launchfile=NA, sep
       launch <- c(launch, paste(simevolv, "-p", paste0(rownames(param.grid)[i], param.ext), "-o", paste0(rownames(param.grid)[i], sep[3], formatC(rr, width = 1+floor(log10(reps)), format = "d", flag = "0"), simu.ext), sep=" "))
     }
   }
+  # browser()
   if (!is.na(launchfile)) {
     dir <- as.character(dirname(template))
     cat(launch, file=print(sprintf("%s/%s", dir , launchfile)), sep="\n")
   }
   launch
+}
+
+#Function to print parameter files of the wanted S matrix
+param.from.sel.features <- function(param.template, param.out="param.par", cor=NA, angle=NA, size=NA, eccentricity=NA, reps=40) {
+  pp <- read.param(param.template)
+  S.mat <- matrix2.from.features(cor=cor, angle=angle, size=size, eccentricity=eccentricity)
+  n.genes <- if ("GENET_NBPHEN" %in% names(pp)) pp$GENET_NBPHEN else pp$GENET_NBLOC
+  pS <- param.S.matrix(S.mat, n.genes=n.genes)
+  pp[names(pS)] <- pS
+  write.param(pp, parfile=param.out)
 }
 
 extract.nbphen <- function(parfile) {
@@ -241,16 +252,6 @@ matrix2.from.features <- function(cor=NA, angle=NA, size=NA, eccentricity=NA, me
   } else {
     stop("Method ", method, " not available.")
   }
-}
-
-#Function to print parameter files of the wanted S matrix
-param.from.sel.features <- function(param.template, param.out="param.par", cor=NA, angle=NA, size=NA, eccentricity=NA) {
-  pp <- read.param(param.template)
-  S.mat <- matrix2.from.features(cor=cor, angle=angle, size=size, eccentricity=eccentricity)
-  n.genes <- if ("GENET_NBPHEN" %in% names(pp)) pp$GENET_NBPHEN else pp$GENET_NBLOC
-  pS <- param.S.matrix(S.mat, n.genes=n.genes)
-  pp[names(pS)] <- pS
-  write.param(pp, parfile=param.out)
 }
 
 #MUTSD CALIBRATION###############################################################################
@@ -530,30 +531,33 @@ df.raster.map <- function(sims.dir, modulo=pi, all.gen=FALSE){
   simul.df <- data.frame()
   filedata <- data.frame()
   #collect all the data
-  for (i in sims.dir) {
-    files     <- list.files(path = i, full.names=TRUE, pattern = "\\.txt$")
-    param.file.all = list.files(path=i, pattern="\\.par$", full.names=TRUE)
-    param.file <- as.character(param.file.all[1])
-    stopifnot(length(files) >0)
-    #read param.par to associate each simu with S properties
-    rp <- read.param(param.file)
-    mut.rate <- 2*rp$GENET_MUTRATES
-    if (rp$GENET_MUTTYPE=="locus") mut.rate <- mut.rate*rp$GENET_NBLOC
-    S.ref2 <- matrix.features(extract.S.matrix(param.file), n.genes=2)[["angle"]][1]
-    
-    mytopos <- lapply(files, function(ff) {
-      tt <- read.table(ff, header=TRUE) 
-      mygens <-rev(if (all.gen==TRUE) tt[,"Gen"] else tt[nrow(tt),"Gen"])
-      for (gen in mygens) {
-        phen.mean <- extract.P.mean(tt, gen=gen)
-        M.mat <- extract.M.matrix(tt, gen=gen)
-        M.feat2 <- matrix.features(M.mat,n.genes=2)[["angle"]][1] #M angle
-        mean.ma.df <- M.feat2
-        data.gen <- c(ff, gen, S.ref2, M.feat2, phen.mean[1],phen.mean[2],mean.ma.df )
-        filedata <- rbind(filedata, data.gen)
-        #create a list of data
-      }
-      return(as.list(filedata))
+
+    files     <- list.files(path = sims.dir, full.names=TRUE, pattern = "\\.txt$")
+    #change here how to get to the right param file !
+    for (i in sims.dir) { 
+      #TO CHECK
+        parname<- str_split(i, ".txt$", n=2, simplify = TRUE)
+        param.file <- as.character(list.files(path=sims.dir, pattern=sprintf("%s.par$",parname[1]), full.names=TRUE))
+        #TO CHECK
+        stopifnot(length(files) >0)
+        rp <- read.param(param.file)
+        mut.rate <- 2*rp$GENET_MUTRATES
+        if (rp$GENET_MUTTYPE=="locus") mut.rate <- mut.rate*rp$GENET_NBLOC
+        S.ref2 <- matrix.features(extract.S.matrix(param.file), n.genes=2)[["angle"]][1]
+        
+        mytopos <- lapply(files, function(ff) {
+          tt <- read.table(ff, header=TRUE) 
+          mygens <-rev(if (all.gen==TRUE) tt[,"Gen"] else tt[nrow(tt),"Gen"])
+          for (gen in mygens) {
+            phen.mean <- extract.P.mean(tt, gen=gen)
+            M.mat <- extract.M.matrix(tt, gen=gen)
+            M.feat2 <- matrix.features(M.mat,n.genes=2)[["angle"]][1] #M angle
+            mean.ma.df <- M.feat2
+            data.gen <- c(ff, gen, S.ref2, M.feat2, phen.mean[1],phen.mean[2],mean.ma.df )
+            filedata <- rbind(filedata, data.gen)
+            #create a list of data
+          }
+          return(as.list(filedata))
     })
     newt <- as.data.frame(rbindlist(mytopos, use.names=FALSE))
     newt[,7] <- mean.angle.pi(as.numeric(newt[,7]))
@@ -679,7 +683,7 @@ df.data <- function(sims.dirs, modulo=pi, pattern="../../simul/", variable="popu
   return(df.datas)
 }
 
-table.index <- function(sims.dirs, modulo=pi, pattern="../../simul/", ref=df.all, bymean=FALSE){
+table.index <- function(sims.dirs, modulo=pi, pattern="../../simul/", ref=df.all, bymean=FALSE, asgrob=TRUE){
   ##Alignment index calcul and Tab
   df.sq_rho <- data.frame(ncol(4))
   j <- 1
@@ -712,7 +716,8 @@ table.index <- function(sims.dirs, modulo=pi, pattern="../../simul/", ref=df.all
     j <- j +1
   }
   names(df.sq_rho) <- c("Population","sq_rho","standard deviation","Xi_alpha")
-  g <- tableGrob(as.matrix(df.sq_rho),rows = NULL)
+  # if (asgrob==TRUE) g <- tableGrob(as.matrix(df.sq_rho),rows = NULL) else g <- df.sq_rho
+  g <- if(asgrob==TRUE) tableGrob(as.matrix(df.sq_rho),rows = NULL) else df.sq_rho
   return(g)
 }
 

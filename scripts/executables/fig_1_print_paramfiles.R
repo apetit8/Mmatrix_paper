@@ -8,22 +8,28 @@ values <- list(-pi/8, 0, pi/4, -1.5, 1.5,-1.4, 1.4, -1, 1, -0.5, 0.5, -0.7, -0.2
 #####################
 
 #This loop creates a parameter template for each angle given.
-sims.dirs <- c("../../simul/fig_1/m") #multilinear template location
+sims.dirs <- c("../../templates/fig_1/m") #multilinear template location
 for (sims.dir in sims.dirs) {
   param.template = file.path(sims.dir, "template.temp")
+  new.dir<- str_split(sims.dir, "../../templates/", n=2, simplify = TRUE)
+  dir <- sprintf("../../simul/%s", new.dir[2])
+  dir.create(dir)
   for (a in values) {
-    param.file <- file.path(sims.dir, sprintf("templateangle%s.par", round(a, digits=3)))
+    param.file <- file.path(dir, sprintf("templateangle%s.par", round(a, digits=3)))
     param.from.sel.features(param.template, param.file, angle=a, size=def.s, eccentricity=def.e)
   }
 }
 print("Multilinear paramfiles : done !")
 
 
-sims.dirs <- c("../../simul/fig_1/w") #Wagner template location
+sims.dirs <- c("../../templates/fig_1/w") #Wagner template location
 for (sims.dir in sims.dirs) {
   param.template = file.path(sims.dir, "template.temp")
+  new.dir<- str_split(sims.dir, "../../templates/", n=2, simplify = TRUE)
+  dir <- sprintf("../../simul/%s", new.dir[2])
+  dir.create(dir)
   for (a in values) {
-    param.file <- file.path(sims.dir, sprintf("templateangle%s.par", round(a, digits=3)))
+    param.file <- file.path(dir, sprintf("templateangle%s.par", round(a, digits=3)))
     param.from.sel.features(param.template, param.file, angle=a, size=def.s, eccentricity=def.e)
   }
 }
