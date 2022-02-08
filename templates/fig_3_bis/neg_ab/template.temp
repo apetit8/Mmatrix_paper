@@ -14,7 +14,7 @@ GENET_EPIGENET 	 0
 INIT_PSIZE 	 5000 
 INIT_ALLELES 	 0 1e-05 
 INIT_CLONAL 	 clonal
-TYPE_ALLELES 	 immut immut normal normal immut immut normal normal normal normal immut normal normal normal normal immut
+TYPE_ALLELES 	 immut sign normal normal sign immut normal normal normal normal immut normal normal normal normal immut
 INIT_ALLELES_FULL       0 -2 0 0 -2 0 0 0 0 0 0 0 0 0 0 0
 INIT_CONNECT 	 1 
 INIT_CONDIAG 	 1 

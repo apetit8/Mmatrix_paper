@@ -182,6 +182,20 @@ extract.S.matrix <- function(parfile) {
   ans
 }
 
+extract.S.matrix.fig3 <- function(parfile) {
+  .cor2cov <- function(cc, sd) t(cc*sd)*sd
+  rp <- read.param(parfile)
+  fs <- rp$FITNESS_STRENGTH
+  np <- 4
+    vv  <- 1/(2*fs)
+    rr <- rp$FITNESS_CORRELATION
+    ansr <- diag(np)
+    ansr[upper.tri(ansr)] <- rr
+    ansr <- as.matrix(Matrix::forceSymmetric(ansr))
+    ans <- .cor2cov(ansr, sqrt(vv))
+  ans
+}
+
 ##
 #Take properties of S and convert it in S parameters for Simevolv 
 param.S.matrix <- function(S.mat, n.genes=ncol(S.mat)) {
@@ -342,7 +356,7 @@ modulopi <- function(angle) {
   ifelse(ans > pi/2, ans-pi, ans)
 }
 
-#Same as modulopi but allows to pick the modulo
+#Diff between angle, allows to pick the modulo
 modulo.all <- function(angle, modulo=pi) {
   angle <- angle %% modulo
   ifelse(angle > modulo/2, angle - modulo, angle)
@@ -531,21 +545,22 @@ df.raster.map <- function(sims.dir, modulo=pi, all.gen=FALSE){
   simul.df <- data.frame()
   filedata <- data.frame()
   #collect all the data
-
     files     <- list.files(path = sims.dir, full.names=TRUE, pattern = "\\.txt$")
     #change here how to get to the right param file !
-    for (i in sims.dir) { 
-      #TO CHECK
-        parname<- str_split(i, ".txt$", n=2, simplify = TRUE)
-        param.file <- as.character(list.files(path=sims.dir, pattern=sprintf("%s.par$",parname[1]), full.names=TRUE))
-        #TO CHECK
-        stopifnot(length(files) >0)
+    files <- files[sapply(files, file.size) > 150000]
+    for (i in files) { 
+        #
+      print(i)
+        parname1<- str_split(i, ".txt$", n=2, simplify = TRUE)
+        parname2<- str_split(parname1, "-R", n=2, simplify = TRUE)
+        parname3<- str_split(parname2, "NEXTPAR-", n=2, simplify = TRUE)
+        parname4 <- str_split(parname2, "/FITNESS_OPTIMUM-", n=2, simplify = TRUE)
+        param.file <- sprintf("%s/%s", parname4[1,1], parname3[1,2]) #get the name of the second paramfile, with the right S
+        #
         rp <- read.param(param.file)
-        mut.rate <- 2*rp$GENET_MUTRATES
-        if (rp$GENET_MUTTYPE=="locus") mut.rate <- mut.rate*rp$GENET_NBLOC
-        S.ref2 <- matrix.features(extract.S.matrix(param.file), n.genes=2)[["angle"]][1]
+        S.ref2 <- matrix.features(extract.S.matrix.fig3(param.file), n.genes=2)[["angle"]][1]
         
-        mytopos <- lapply(files, function(ff) {
+        mytopos <- lapply(i, function(ff) {
           tt <- read.table(ff, header=TRUE) 
           mygens <-rev(if (all.gen==TRUE) tt[,"Gen"] else tt[nrow(tt),"Gen"])
           for (gen in mygens) {
@@ -564,13 +579,57 @@ df.raster.map <- function(sims.dir, modulo=pi, all.gen=FALSE){
     setnames(newt, 1:7, c("data.dir", "Gen","ang_S","ang_M","P_mean_A","P_mean_B","mean_ang_m"))
     # newt <- ldply(mytopos) # create a data.frame for mytopos
     simul.df <- rbind(simul.df, newt) #paste the data of i in a data.frame with the others
-  }
+    }
   simul.df[,2:7] <- lapply( simul.df[,2:7], as.numeric)
   sq_dist <- 1 - ((modulo.all(simul.df$ang_M-simul.df$ang_S, modulo = modulo))^2)/((pi^2)/12)
   simul.df <- as.data.frame(cbind(simul.df, sq_dist)) #df of 8 columns
   return(simul.df)
   
 }
+
+df.fig1 <- function(sims.dir, modulo=pi, all.gen=FALSE){
+  simul.df <- data.frame()
+  filedata <- data.frame()
+  #collect all the data
+  for (i in sims.dir) {
+    files     <- list.files(path = i, full.names=TRUE, pattern = "\\.txt$")
+    param.file.all = list.files(path=i, pattern="\\.par$", full.names=TRUE)
+    param.file <- as.character(param.file.all[1])
+    stopifnot(length(files) >0)
+    
+    #read param.par to associate each simu with S properties
+    rp <- read.param(param.file)
+    mut.rate <- 2*rp$GENET_MUTRATES
+    if (rp$GENET_MUTTYPE=="locus") mut.rate <- mut.rate*rp$GENET_NBLOC
+    S.ref2 <- matrix.features(extract.S.matrix(param.file), n.genes=2)[["angle"]][1]
+    
+    mytopos <- lapply(files, function(ff) {
+      #print(ff)
+      tt <- read.table(ff, header=TRUE) 
+      mygens <-rev(if (all.gen==TRUE) tt[,"Gen"] else tt[nrow(tt),"Gen"])
+      for (gen in mygens) {
+        phen.mean <- extract.P.mean(tt, gen=gen)
+        M.mat <- extract.M.matrix(tt, gen=gen)
+        M.feat2 <- matrix.features(M.mat,n.genes=2)[["angle"]][1] #M angle
+        mean.ma.df <- M.feat2
+        data.gen <- c(ff, gen, S.ref2, M.feat2, phen.mean[1],phen.mean[2],mean.ma.df )
+        filedata <- rbind(filedata, data.gen)
+        #create a list of data
+      }
+      return(as.list(filedata))
+    })
+    newt <- as.data.frame(rbindlist(mytopos, use.names=FALSE))
+    newt[,7] <- mean.angle.pi(as.numeric(newt[,7]))
+    setnames(newt, 1:7, c("data.dir", "Gen","ang_S","ang_M","P_mean_A","P_mean_B","mean_ang_m"))
+    # newt <- ldply(mytopos) # create a data.frame for mytopos
+    simul.df <- rbind(simul.df, newt) #paste the data of i in a data.frame with the others
+  }
+  simul.df[,2:7] <- lapply( simul.df[,2:7], as.numeric)
+  sq_dist <- 1 - ((modulo.all(simul.df$ang_M-simul.df$ang_S, modulo = modulo))^2)/((pi^2)/12)
+  simul.df <- as.data.frame(cbind(simul.df, sq_dist)) #df of 8 columns
+  return(simul.df)
+}
+
 
 df.topo.wide.m<- function(sims.dir, w_of_4=TRUE, network=TRUE){
   simul.df <- data.frame()
@@ -644,13 +703,39 @@ df.topo.wide.m<- function(sims.dir, w_of_4=TRUE, network=TRUE){
 df.opt.map <- function(sims.dir, modulo=pi, bymean=FALSE){
   df.all <- data.frame(NULL)
   for (i in sims.dir) {
-    df <- df.raster.map(i, modulo=modulo)
+    df <- df.fig1(i, modulo=modulo)
     pop <- str_split(i, "../../simul/fig_3/r", n=2, simplify = TRUE)
     df[,9] <- sprintf("%s", pop[,2])
     opti <- sub("-R.*", "", df$data.dir)
     df[,10] <- sprintf("%s", opti)
     df.all <- rbind(df.all, df)
   }
+  return(df.all)
+  #This part add a column : Xi_a calculated from the mean M angle. 
+  if (bymean==TRUE){
+    df.mean.Ea <- data.frame()  
+    for (j in unique(df.all$V9)) {
+      df.ang <- subset(df.all, V9 == j)
+      for (k in unique(df.ang$V10)) {
+        df.ang.opt <- subset(df.ang, V10 == k)
+        df.ang.opt[,11] <- 1 - ((modulo.all(mean.angle.pi(df.ang.opt$ang_M)-df.ang.opt$ang_S, modulo = modulo))^2)/((pi^2)/12)
+        df.mean.Ea <- rbind(df.mean.Ea, df.ang.opt)
+      }
+    }
+    return(df.mean.Ea)
+  }
+}
+
+
+#Function for optimum map alignment data
+df.opt.map2 <- function(sims.dir, modulo=pi, bymean=FALSE, gen=FALSE){
+  df.all <- data.frame(NULL)
+    df <- df.raster.map(sims.dir, modulo=modulo, all.gen=gen)
+    pop <- str_split(sims.dir, "../../simul/fig_3_bis/", n=2, simplify = TRUE)
+    df[,9] <- sprintf("%s", pop[,2])
+    opti <- sub("-R.*", "", df$data.dir)
+    df[,10] <- sprintf("%s", opti)
+    df.all <- rbind(df.all, df)
   return(df.all)
   #This part add a column : Xi_a calculated from the mean M angle. 
   if (bymean==TRUE){

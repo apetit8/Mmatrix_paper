@@ -14,7 +14,7 @@ S.factor <- 1
 df.m.s.gen <- data.frame()
 for (i in angle) {
   sims.dir  <- list.files(path=sims.dirs, pattern=sprintf("angle_%s.par", i), full.names=TRUE)
-  df <- df.raster.map(sims.dir, all.gen=TRUE)
+  df <- df.fig1(sims.dir, all.gen=TRUE)
   pop <- str_split(df$data.dir, "../../simul/fig_1/", n=2, simplify = TRUE)
   df[,9] <- sprintf("%s", pop[,2])
   model <- str_split(pop[,2], "/angle_", n=2, simplify = TRUE)
@@ -57,7 +57,18 @@ print("Ellipses done !")
 
 
 #Df with only the last generation
-df.m.s <- subset(df.m.s.gen, Gen == max(df.m.s.gen$Gen))
+angle <- c(0.785, 0, -0.393, -1.5, 1.5, -1, 1, -0.5, 0.5, -0.7, -0.2, 0.2, -0.3, 0.3, -0.4, 0.4, -0.6, 0.6, -0.9, 0.9, 0.7, -0.8, 0.8, -1.1, 1.1, -1.2, 1.2,-1.3, 1.3, -1.4, 1.4,-0.1, 0.1) #Angle values
+#Df with generations
+df.m.s <- data.frame()
+for (i in angle) {
+  sims.dir  <- list.files(path=sims.dirs, pattern=sprintf("angle_%s.par", i), full.names=TRUE)
+  df <- df.fig1(sims.dir, all.gen=FALSE)
+  pop <- str_split(df$data.dir, "../../simul/fig_1/", n=2, simplify = TRUE)
+  df[,9] <- sprintf("%s", pop[,2])
+  model <- str_split(pop[,2], "/angle_", n=2, simplify = TRUE)
+  df[,10] <- sprintf("%s", model[,1])
+  df.m.s <- rbind(df.m.s, df) 
+}
 df.m <- subset(df.m.s, V10 == "m") #Df of Multilinear simulations
 df.w <- subset(df.m.s, V10 == "w") #Df of Wagner simulations
 m_Eva <-round( 1- mean((modulo.all((df.m$ang_M - df.m$ang_S) ,modulo=pi)^2)/((pi^2)/12)),3)

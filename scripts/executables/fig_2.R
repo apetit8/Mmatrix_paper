@@ -16,9 +16,9 @@ pfig2 <- ggplot(data=df.fig2, aes(ang_S, ang_M,col=netw))+
   geom_abline(intercept=pi, colour="#666666")+
   geom_abline(intercept=-pi, colour="#666666")+
   #previously : alpha of 0.1
-  geom_point(aes(y=ang_M, fill=netw), alpha=0.12, show.legend = FALSE)+
-  geom_point(aes(y=ang_M_mpi, fill=netw), alpha=0.12, show.legend = FALSE)+
-  geom_point(aes(y=ang_M_ppi, fill=netw), alpha=0.12, show.legend = FALSE)+
+  geom_point(aes(y=ang_M, fill=1-ecc_M), alpha=0.12, show.legend = FALSE)+
+  geom_point(aes(y=ang_M_mpi, fill=1-ecc_M), alpha=0.12, show.legend = FALSE)+
+  geom_point(aes(y=ang_M_ppi, fill=1-ecc_M), alpha=0.12, show.legend = FALSE)+
   # geom_point(aes(y=mean_ang_M, fill=netw), show.legend = FALSE)+
   labs(y="M direction", x="S direction")
 pfig2 <- pfig2 + scale_x_continuous(breaks=c(0, pi/4, pi/2, -pi/4, -pi/2),
@@ -84,17 +84,17 @@ dev.off()
 
 
 
-
-
-# pfig2 <- ggplot(data=df.fig2, aes(ang_S, ang_M,col=netw))+
+# 
+# 
+# pfig2 <- ggplot(data=df.fig2, aes(ang_S, ang_M,col=ecc_M))+
 #   coord_fixed(ratio = 1, xlim = c(-1.5,1.5), ylim = c(-pi/2-0.2,pi/2+0.2), expand = TRUE, clip = "on")+
 #   geom_abline()+
 #   geom_abline(intercept=pi)+
 #   geom_abline(intercept=-pi)+
 #   #previously : alpha of 0.1
-#   geom_point(aes(y=ang_M, col=ang_diff), alpha=0.3)+
-#   geom_point(aes(y=ang_M_mpi, col=ang_diff), alpha=0.3)+
-#   geom_point(aes(y=ang_M_ppi, col=ang_diff), alpha=0.3)+
+#   geom_point(aes(y=ang_M, col=ecc_M), alpha=0.3)+
+#   geom_point(aes(y=ang_M_mpi, col=ecc_M), alpha=0.3)+
+#   geom_point(aes(y=ang_M_ppi, col=ecc_M), alpha=0.3)+
 #   # geom_point(aes(y=mean_ang_M, fill=netw), show.legend = FALSE)+
 #   labs(title = ("A/ M direction distribution and mean for different S direction"), y="M direction", x="S direction")
 # pfig2 <- pfig2 + scale_x_continuous(breaks=c(0, pi/4, pi/2, -pi/4, -pi/2),

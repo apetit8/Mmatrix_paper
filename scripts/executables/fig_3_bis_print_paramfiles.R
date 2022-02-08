@@ -1,11 +1,14 @@
 source("../functions_R/All_functions.R")
 #####################
 sims.dirs <- c(
-  "../../templates/fig_3_bis/no_ab","../../templates/fig_3_bis/neg_ab","../../templates/fig_3_bis/pos_ab"
+  #"../../templates/fig_3_bis/no_ab",
+  "../../templates/fig_3_bis/pos_ab"
+  # "../../templates/fig_3_bis/pos_ab"
 )
 
 #Localisation of Simevolv program :
-sim <- "/home/apetit/simevolv/bin/Release/Simul_Prog"
+#sim <- "/home/apetit/simevolv/bin/Release/Simul_Prog"
+sim <- "/shared/projects/transp_horizon/Software/simevolv/bin/Release/Simul_Prog"
 #####################
 
 #Second evolutionary phase : correlational selection
@@ -49,6 +52,6 @@ for (sims.dir in sims.dirs) {
     generate.param.list(template=temp, param.list=list(FITNESS_OPTIMUM=c(-1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1),
                                                        FITNESS_OPTIMUM=c(-1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1),
                                                        FILE_NEXTPAR=nextpar), vec.indx=c(1,2,1),
-                        simevolv=sim, reps=13, launchfile="launcher.sh")
+                        simevolv=sim, reps=7, launchfile="launcher.sh")
   }
 }

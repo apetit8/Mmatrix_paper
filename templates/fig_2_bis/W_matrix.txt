@@ -1,0 +1,149 @@
+D0:
+ c m m m m m
+ m c m m m m
+ m m c m m m
+ m m m c m m
+ m m m m c m
+ m m m m m c
+
+D1:
+ c m c m c c
+ m c c c m c
+ c c c m c c
+ m c m c c c
+ c m c c c m
+ c c c c m c
+ 
+ D2:
+ 
+ c c m c c c
+ c c m c c c
+ m m c c m m
+ c c c c c m
+ c c m c c c
+ c c m m c c
+ 
+ D3:
+ 
+ c c c m c c
+ c c c c m c
+ m c c c c c
+ m c m c m c
+ c m c m c m
+ c c c c m c
+
+
+
+ 
+ D4:
+ 
+ c c m c c c
+ c c c c m c
+ m c c m c c
+ c c m c m m
+ c m c m c c
+ c c c m c c
+ 
+ D5:
+ 
+ c c m c c c
+ c c c c c m
+ m c c m c c
+ c c m c m c
+ c c c m c m
+ c m c c m c
+
+
+
+ STAR
+
+D1:
+ c m 
+ m c
+
+ 
+ D2:
+ 
+ c c m c c
+ c c m c c
+ m m c m m
+ c c m c c
+ c c m c c
+ 
+ D3:
+ 
+ c c m c c c
+ c c c m c c
+ m c c m m c
+ c m m c c m
+ c c m c c c
+ c c c m c c
+
+ D4:
+ 
+ c c m c c c c
+ c c c m c c c
+ m c c c m c c
+ c m c c m c c
+ c c m m c m m
+ c c c c m c c
+ c c c c m c c
+ 
+ D5:
+ 
+ c c m c c c c c
+ c c c m c c c c
+ m c c c m c c c
+ c m c c c m c c
+ c c m c c m m c
+ c c c m m c c m
+ c c c c m c c c
+ c c c c c m c c
+
+ARRAY
+
+D1:
+
+ c m c m 
+ m c m c 
+ c m c c 
+ m c c c
+
+ 
+ D2:
+ 
+ c c c m m
+ c c m c m
+ c m c c c
+ m c c c c
+ m m c c c
+ 
+ D3:
+ 
+ c c c m m c
+ c c m c c m
+ c m c c c c
+ m c c c c c
+ m c c c c m
+ c m c c m c
+
+ D4:
+ 
+ c c c m m c c
+ c c m c c m c
+ c m c c c c c
+ m c c c c c c
+ m c c c c c m
+ c m c c c c m
+ c c c c m m c
+ 
+ D5:
+ 
+ c c c m m c c c
+ c c m c c m c c
+ c m c c c c c c
+ m c c c c c c c
+ m c c c c c m c
+ c m c c c c m c
+ c c c c m c c m
+ c c c c c m m c
