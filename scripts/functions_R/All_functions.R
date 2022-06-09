@@ -58,6 +58,13 @@ extract.matrix <- function(tt, what="CovPhen", gen=tt[nrow(tt), "Gen"]) {
   matrix(ex, ncol=sqrt(length(ex)))
 }
 
+extract.fitness <- function(tt, what="Mfit", gen=tt[nrow(tt), "Gen"]) {
+  ex <- unlist(tt[tt[,"Gen"]==gen, grep(colnames(tt), pattern=what)])
+  if (length(ex) == 0) stop("No match for ", what, " at generation ", gen,".")
+  return(ex)
+}
+
+
 extract.P.matrix <- function(tt, gen=tt[nrow(tt),"Gen"]) {
   extract.matrix(tt, "CovPhen", gen=gen)
 }
@@ -99,7 +106,7 @@ generate.param.list <- function(template, param.list, reps=1, launchfile=NA, sep
   
   templ <- read.param(template)
   param.grid <- do.call(expand.grid, param.list)
-  param.grid[,3] <- as.character(param.grid[,3] )
+  param.grid[,2] <- as.character(param.grid[,2] ) #the number = number of the argument : nextpar
   names.grid <- do.call(expand.grid,  list(lapply(param.list, function(pp) if (is.null(names(pp))) as.character(pp) else  as.character(pp))))
   colnames(names.grid) <- paste0(colnames(names.grid), ifelse(vec.indx == 1, "", vec.indx))
   rownames(param.grid) <- do.call(paste, c(lapply(colnames(names.grid), function(nn) paste(nn, names.grid[,nn], sep=sep[1])), list(sep=sep[2])))
@@ -112,7 +119,8 @@ generate.param.list <- function(template, param.list, reps=1, launchfile=NA, sep
       stop("Error: parameter ", names(param.list)[j], " does not have ", vec.indx[j], "elements.")
       mypar[[names(param.list)[j]]][vec.indx[j]] <- param.grid[i,j]
     }
-    parfile <- paste0(param.dir, "/", rownames(param.grid)[i], param.ext)
+    # parfile <- paste0(param.dir, "/","simu-", rownames(param.grid)[i], param.ext)
+    parfile <- paste0(param.dir, "/","simu-", str_split(rownames(param.grid)[i],"../", n=2, simplify = TRUE)[2], param.ext)
     write.param(parfile=parfile, parlist=mypar)
     for (rr in seq_len(reps)) {
       launch <- c(launch, paste(simevolv, "-p", paste0(rownames(param.grid)[i], param.ext), "-o", paste0(rownames(param.grid)[i], sep[3], formatC(rr, width = 1+floor(log10(reps)), format = "d", flag = "0"), simu.ext), sep=" "))
@@ -186,7 +194,7 @@ extract.S.matrix.fig3 <- function(parfile) {
   .cor2cov <- function(cc, sd) t(cc*sd)*sd
   rp <- read.param(parfile)
   fs <- rp$FITNESS_STRENGTH
-  np <- 4
+  np <- 6 #manually = number of genes
     vv  <- 1/(2*fs)
     rr <- rp$FITNESS_CORRELATION
     ansr <- diag(np)
@@ -206,7 +214,10 @@ param.S.matrix <- function(S.mat, n.genes=ncol(S.mat)) {
   if (n.genes > ncol(S.mat)) {
     rec <- matrix(0, ncol=n.genes-ncol(S.mat), nrow=nrow(S.mat))
     dg <- matrix(0, ncol=n.genes-ncol(S.mat), nrow=n.genes-nrow(S.mat))
+    #diag(dg) <- Inf
     diag(dg) <- Inf
+    dg[1] <- 10 #To keep some selection on C and D genes, value can be changed
+    dg[6] <- 10 #To keep some selection on C and D genes
     S.mat <- rbind(cbind(S.mat, rec), cbind(t(rec), dg))
   }
   list(
@@ -221,7 +232,7 @@ matrix.features <- function(M, n.genes=ncol(M)) {
   M <- M[1:n.genes, 1:n.genes]
   ee <- try(eigen(M), silent=TRUE)
   ee$vectors <- t (t(ee$vectors * sign(ee$vectors[2,]))) # by convention, the second eigenvector is always positive
-  
+
   if (class(ee) == "try-error") {
     return(list(cor=NA, angle=NA, size=NA, eccentricity=NA))
   }
@@ -426,9 +437,9 @@ draw.ellipses <- function(G.mat=NULL, M.mat=NULL, S.mat=NULL, G.centre=c(0,0), M
 #Draw ellipses of multiple destinations into one plot
 oneplot.allellipse <- function(data.dirs, xlim=NULL, ylim=NULL, xlab="Trait A", ylab="Trait B", 
                                S.factor=0.00005, M.factor=1,  G.factor=1, 
-                               asp=1, all.gen=FALSE, all.reps=FALSE, ...) {
+                               asp=1, all.gen=FALSE, all.reps=FALSE, legend=TRUE, ...) {
   plot(NULL, xlim=xlim, ylim=ylim, xlab=xlab, ylab=ylab, asp=asp,  ...)
-  
+
   for (data.dir in data.dirs) {
     
     data.files = list.files(path=data.dir, pattern="simul.*.txt$", full.names=TRUE)
@@ -470,11 +481,59 @@ oneplot.allellipse <- function(data.dirs, xlim=NULL, ylim=NULL, xlab="Trait A", 
         M.factor=M.factor, S.factor=S.factor,
         mat.col=mat.col, xlab=xlab, ylab=ylab, xlim=xlim, ylim=ylim,
         add=TRUE, ...)
-      legend("topleft", lty=1, box.lty=0, bg="transparent", col=c("yellowgreen", "darkblue", "orange"),
-             legend=c(paste0("M wagner", if (M.factor != 1) paste0(" (x ", M.factor, ")")), paste0("M multilinear", if (M.factor != 1) paste0(" (x ", M.factor, ")")),paste0("S", if (S.factor != 1) paste0(" (x ", S.factor, ")"))))
+      if (legend==TRUE){legend("topleft", lty=1, box.lty=0, bg="transparent", col=c("yellowgreen", "darkblue", "orange"),
+             legend=c(paste0("M GRN", if (M.factor != 1) paste0(" (x ", M.factor, ")")), paste0("M multilinear", if (M.factor != 1) paste0(" (x ", M.factor, ")")),paste0("S", if (S.factor != 1) paste0(" (x ", S.factor, ")"))))}
     }
   }
 }
+
+oneplot.netw <- function(data.dirs, xlim=NULL, ylim=NULL, 
+                               M.factor=1,  G.factor=1, S.factor=1,
+                               asp=1, all.gen=FALSE, all.reps=TRUE, mat.col=c(M="yellowgreen", S="orange"), angle=c(1,0), ...) {
+  for (data.d in data.dirs) {
+    for (i in angle) {
+    # add <- FALSE
+    data.dir  <- list.files(path=data.d, pattern=sprintf("angle%s.parangle", i), full.names=TRUE)
+    print(data.dir)
+    data.files <- list.files(path=data.dir, pattern="simul.*.txt$", full.names=TRUE)
+    data.files <- data.files[sapply(data.files, file.size) > 10000]
+    param.file <- list.files(path=data.dir, pattern="*.par",        full.names=TRUE)
+    # browser()
+    stopifnot(length(data.files) >0, length(param.file) == 1)
+    
+    simuls = lapply(data.files, function(x) read.table(x, header=TRUE)) #import list
+    simuls.mean = replicate.mean(simuls)
+    
+    mygens <-rev(if (all.gen) simuls.mean[,"Gen"] else simuls.mean[nrow(simuls.mean),"Gen"])
+    plot(NULL,  xlim=xlim, ylim=ylim, asp=asp, ...)
+    
+    for (gen in mygens) {
+      # Mean over replicates
+      phen.mean <- extract.P.mean(simuls.mean, gen=gen)
+      draw.ellipses(
+        M.mat=NULL,
+        S.mat=if(gen==mygens[1]) extract.S.matrix(param.file) else NULL,
+        G.centre=extract.theta(param.file), S.centre=extract.theta(param.file),
+        M.factor=M.factor, S.factor=S.factor,
+        mat.col=mat.col, xlim=xlim, ylim=ylim,
+        add=TRUE, ...)
+      if (all.reps) {
+        for (simul in simuls) {
+          phen.mean <- extract.P.mean(simul, gen=gen)
+          # browser()
+          draw.ellipses(
+            M.mat=extract.M.matrix(simul, gen=gen),
+            S.mat=NULL, G.centre=extract.theta(param.file), M.factor=M.factor, S.factor=S.factor,
+            mat.col=makeTransparent(mat.col, alpha=40), xlim=xlim, ylim=ylim,
+            add=TRUE, ...)
+          # add <- TRUE         
+        }
+      }
+    }
+   }
+  }
+}
+
 
 ##DATAFRAME#########################################################
 diff.ms.df <- function(sims.dir, modulo=pi){
@@ -482,6 +541,7 @@ diff.ms.df <- function(sims.dir, modulo=pi){
   #collect all the data
   for (i in sims.dir) {
     files     <- list.files(path = i, full.names=TRUE, pattern = "^simul")
+    files <- files[sapply(files, file.size) > 500000] #10000
     param.file = list.files(path=i, pattern="param.par", full.names=TRUE)
     stopifnot(length(files) >0, length(param.file) == 1)
     #read param.par to associate each simu with the S "what"
@@ -513,6 +573,7 @@ diff.ms.by.mean <- function(sims.dir, modulo=pi){
   #collect all the data
   for (i in sims.dir) {
     files     <- list.files(path = i, full.names=TRUE, pattern = "^simul")
+    files <- files[sapply(files, file.size) > 10000]
     param.file = list.files(path=i, pattern="param.par", full.names=TRUE)
     stopifnot(length(files) >0, length(param.file) == 1)
     #read param.par to associate each simu with the S "what"
@@ -540,51 +601,95 @@ diff.ms.by.mean <- function(sims.dir, modulo=pi){
   diff.ls <-modulo.all(simul.df[,3]-simul.df[,1], modulo=modulo)
   return(diff.ls)
 }
+# 
+# df.raster.map <- function(sims.dir, modulo=pi, all.gen=FALSE){
+#   simul.df <- data.frame()
+#   filedata <- data.frame()
+#   #collect all the data
+#     files     <- list.files(path = sims.dir, full.names=TRUE, pattern = "\\.txt$")
+#     #change here how to get to the right param file !
+#     files <- files[sapply(files, file.size) > 150000]
+#     for (i in files) { 
+#         #
+#         parname1<- str_split(i, ".txt$", n=2, simplify = TRUE)
+#         parname2<- str_split(parname1, "-R", n=2, simplify = TRUE)
+#         parname3<- str_split(parname2, "NEXTPAR-", n=2, simplify = TRUE)
+#         parname4 <- str_split(parname2, "/FITNESS_OPTIMUM-", n=2, simplify = TRUE)
+#         param.file <- sprintf("%s/%s", parname4[1,1], parname3[1,2]) #get the name of the second paramfile, with the right S
+#         #
+#         rp <- read.param(param.file)
+#         S.ref2 <- matrix.features(extract.S.matrix.fig3(param.file), n.genes=2)[["angle"]][1]
+#         
+#         mytopos <- lapply(i, function(ff) {
+#           tt <- read.table(ff, header=TRUE) 
+#           mygens <-rev(if (all.gen==TRUE) tt[,"Gen"] else tt[nrow(tt),"Gen"])
+#           for (gen in mygens) {
+#             phen.mean <- extract.P.mean(tt, gen=gen)
+#             M.mat <- extract.M.matrix(tt, gen=gen)
+#             M.feat2 <- matrix.features(M.mat,n.genes=2)[["angle"]][1] #M angle
+#             mean.ma.df <- M.feat2
+#             data.gen <- c(ff, gen, S.ref2, M.feat2, phen.mean[1],phen.mean[2],mean.ma.df )
+#             filedata <- rbind(filedata, data.gen)
+#             #create a list of data
+#           }
+#           return(as.list(filedata))
+#     })
+#     newt <- as.data.frame(rbindlist(mytopos, use.names=FALSE))
+#     newt[,7] <- mean.angle.pi(as.numeric(newt[,7]))
+#     setnames(newt, 1:7, c("data.dir", "Gen","ang_S","ang_M","P_mean_A","P_mean_B","mean_ang_m"))
+#     # newt <- ldply(mytopos) # create a data.frame for mytopos
+#     simul.df <- rbind(simul.df, newt) #paste the data of i in a data.frame with the others
+#     }
+#   simul.df[,2:7] <- lapply( simul.df[,2:7], as.numeric)
+#   sq_dist <- 1 - (((modulo.all(simul.df$ang_M-simul.df$ang_S, modulo = modulo))^2)/((pi^2)/12))
+#   #sq_dist <- modulo.all(simul.df$ang_M-simul.df$ang_S, modulo = modulo)
+#   simul.df <- as.data.frame(cbind(simul.df, sq_dist)) #df of 8 columns
+#   return(simul.df)
+# }
 
 df.raster.map <- function(sims.dir, modulo=pi, all.gen=FALSE){
   simul.df <- data.frame()
   filedata <- data.frame()
   #collect all the data
-    files     <- list.files(path = sims.dir, full.names=TRUE, pattern = "\\.txt$")
-    #change here how to get to the right param file !
-    files <- files[sapply(files, file.size) > 150000]
-    for (i in files) { 
-        #
-      print(i)
-        parname1<- str_split(i, ".txt$", n=2, simplify = TRUE)
-        parname2<- str_split(parname1, "-R", n=2, simplify = TRUE)
-        parname3<- str_split(parname2, "NEXTPAR-", n=2, simplify = TRUE)
-        parname4 <- str_split(parname2, "/FITNESS_OPTIMUM-", n=2, simplify = TRUE)
-        param.file <- sprintf("%s/%s", parname4[1,1], parname3[1,2]) #get the name of the second paramfile, with the right S
-        #
-        rp <- read.param(param.file)
-        S.ref2 <- matrix.features(extract.S.matrix.fig3(param.file), n.genes=2)[["angle"]][1]
-        
-        mytopos <- lapply(i, function(ff) {
-          tt <- read.table(ff, header=TRUE) 
-          mygens <-rev(if (all.gen==TRUE) tt[,"Gen"] else tt[nrow(tt),"Gen"])
-          for (gen in mygens) {
-            phen.mean <- extract.P.mean(tt, gen=gen)
-            M.mat <- extract.M.matrix(tt, gen=gen)
-            M.feat2 <- matrix.features(M.mat,n.genes=2)[["angle"]][1] #M angle
-            mean.ma.df <- M.feat2
-            data.gen <- c(ff, gen, S.ref2, M.feat2, phen.mean[1],phen.mean[2],mean.ma.df )
-            filedata <- rbind(filedata, data.gen)
-            #create a list of data
-          }
-          return(as.list(filedata))
+  files     <- list.files(path = sims.dir, full.names=TRUE, pattern = "\\.txt$")
+  #change here how to get to the right param file !
+  files <- files[sapply(files, file.size) > 150000]
+  for (i in files) { 
+    #
+    parname1<- str_split(i, ".txt$", n=2, simplify = TRUE)
+    parname2<- str_split(parname1, "-R", n=2, simplify = TRUE)
+    parname3<- str_split(parname2, "NEXTPAR-", n=2, simplify = TRUE)
+    parname4 <- str_split(parname2, "/FITNESS_OPTIMUM-", n=2, simplify = TRUE)
+    param.file <- sprintf("%s/%s", parname4[1,1], parname3[1,2]) #get the name of the second paramfile, with the right S
+    #
+    rp <- read.param(param.file)
+    S.ref2 <- matrix.features(extract.S.matrix.fig3(param.file), n.genes=2)[["angle"]][1]
+    
+    mytopos <- lapply(i, function(ff) {
+      tt <- read.table(ff, header=TRUE) 
+      mygens <-rev(if (all.gen==TRUE) tt[,"Gen"] else tt[nrow(tt),"Gen"])
+      for (gen in mygens) {
+        phen.mean <- extract.P.mean(tt, gen=gen)
+        M.mat <- extract.M.matrix(tt, gen=gen)
+        M.feat2 <- matrix.features(M.mat,n.genes=2)[["angle"]][1] #M angle
+        fitness <- extract.fitness(tt, "MFit", gen=gen)
+        data.gen <- c(ff, gen, S.ref2, M.feat2, phen.mean[1],phen.mean[2], fitness)
+        filedata <- rbind(filedata, data.gen)
+        #create a list of data
+      }
+      return(as.list(filedata))
     })
     newt <- as.data.frame(rbindlist(mytopos, use.names=FALSE))
-    newt[,7] <- mean.angle.pi(as.numeric(newt[,7]))
-    setnames(newt, 1:7, c("data.dir", "Gen","ang_S","ang_M","P_mean_A","P_mean_B","mean_ang_m"))
+    #newt[,7] <- mean.angle.pi(as.numeric(newt[,7]))
+    setnames(newt, 1:7, c("data.dir", "Gen","ang_S","ang_M","P_mean_A","P_mean_B","Fitness"))
     # newt <- ldply(mytopos) # create a data.frame for mytopos
     simul.df <- rbind(simul.df, newt) #paste the data of i in a data.frame with the others
-    }
+  }
   simul.df[,2:7] <- lapply( simul.df[,2:7], as.numeric)
-  sq_dist <- 1 - ((modulo.all(simul.df$ang_M-simul.df$ang_S, modulo = modulo))^2)/((pi^2)/12)
+  sq_dist <- 1 - (((modulo.all(simul.df$ang_M-simul.df$ang_S, modulo = modulo))^2)/((pi^2)/12))
+  # sq_dist <- modulo.all(simul.df$ang_M-simul.df$ang_S, modulo = modulo)
   simul.df <- as.data.frame(cbind(simul.df, sq_dist)) #df of 8 columns
   return(simul.df)
-  
 }
 
 df.fig1 <- function(sims.dir, modulo=pi, all.gen=FALSE){
@@ -592,7 +697,9 @@ df.fig1 <- function(sims.dir, modulo=pi, all.gen=FALSE){
   filedata <- data.frame()
   #collect all the data
   for (i in sims.dir) {
+    print(i)
     files     <- list.files(path = i, full.names=TRUE, pattern = "\\.txt$")
+    files <- files[sapply(files, file.size) > 1000]
     param.file.all = list.files(path=i, pattern="\\.par$", full.names=TRUE)
     param.file <- as.character(param.file.all[1])
     stopifnot(length(files) >0)
@@ -625,19 +732,21 @@ df.fig1 <- function(sims.dir, modulo=pi, all.gen=FALSE){
     simul.df <- rbind(simul.df, newt) #paste the data of i in a data.frame with the others
   }
   simul.df[,2:7] <- lapply( simul.df[,2:7], as.numeric)
-  sq_dist <- 1 - ((modulo.all(simul.df$ang_M-simul.df$ang_S, modulo = modulo))^2)/((pi^2)/12)
+  sq_dist <- 1 - (((modulo.all(simul.df$ang_M-simul.df$ang_S, modulo = modulo))^2)/((pi^2)/12))
   simul.df <- as.data.frame(cbind(simul.df, sq_dist)) #df of 8 columns
   return(simul.df)
 }
 
 
-df.topo.wide.m<- function(sims.dir, w_of_4=TRUE, network=TRUE){
+df.topo.wide.m<- function(sims.dir, w_of_4=FALSE, w_of_6=FALSE, network=FALSE, file_size=100000){
   simul.df <- data.frame()
   #collect all the data
   for (i in sims.dir) {
+    print(i)
     files     <- list.files(path = i, full.names=TRUE, pattern = "^simul")
+    files <- files[sapply(files, file.size) > file_size]
     param.file = list.files(path=i, pattern="param.par", full.names=TRUE)
-    stopifnot(length(files) >0, length(param.file) == 1)
+    # stopifnot(length(files) >0, length(param.file) == 1)
     #read param.par to associate each simu with the S "what"
     rp <- read.param(param.file)
     mut.rate <- 2*rp$GENET_MUTRATES
@@ -645,7 +754,7 @@ df.topo.wide.m<- function(sims.dir, w_of_4=TRUE, network=TRUE){
     S.ref2 <- matrix.features(extract.S.matrix(param.file), n.genes=2)[["angle"]][1] #S matrix
     
     mytopos <- lapply(files, function(ff) {
-      #print(ff)
+      print(ff)
       tt <- read.table(ff, header=TRUE)
       #M data
       gen <-tt[nrow(tt),"Gen"]
@@ -655,31 +764,33 @@ df.topo.wide.m<- function(sims.dir, w_of_4=TRUE, network=TRUE){
       M.feat1 <- matrix.features(M.mat,n.genes=2)[["eccentricity"]][1] #M matrix
       M.ang <- matrix.features(M.mat,n.genes=2)[["angle"]][1] #M matrix
       M.feat3 <- matrix.features(M.mat,n.genes=2)[["size"]][1] #M matrix
-      mean.ma.df <- M.ang
+      fitness <- extract.fitness(tt, "MFit", gen=gen)
+      opt1 <- extract.fitness(tt, "FitOpt1", gen=gen)[1]
+      opt2 <- extract.fitness(tt, "FitOpt2", gen=gen)[1]
       if (network==TRUE){
         Wmat <- extract.W.matrix(tt) #W data
-        new <- c(ff, M.ang_ppi, S.ref2, M.ang_mpi, M.feat1, M.ang, M.feat3, mean.ma.df, Wmat )
+        new <- c(ff, M.ang_ppi, S.ref2, M.ang_mpi, M.feat1, M.ang, M.feat3, fitness, opt1, opt2, Wmat )
       }
       if (network!=TRUE){
-        new <- c(ff, M.ang_ppi, S.ref2, M.ang_mpi, M.feat1, M.ang, M.feat3, mean.ma.df )
+        new <- c(ff, M.ang_ppi, S.ref2, M.ang_mpi, M.feat1, M.ang, M.feat3, fitness, opt1, opt2 )
       }
       return(new)
       #create a list of data
     })
     newt <- ldply(mytopos) # create a data.frame for i
-    newt[,8] <- mean.angle.pi.byS(data=as.numeric(newt[,8]), ang_S=as.numeric(newt[,3]))
     simul.df <- rbind(simul.df, newt) #paste the data of i in a data.frame with the others
   }
-  simul.df[,2:8] <- lapply( simul.df[,2:8], as.numeric)
-  names(simul.df)[names(simul.df) == "V1"] <- "data.dir"
-  names(simul.df)[names(simul.df) == "V2"] <- "ang_M_ppi"
-  names(simul.df)[names(simul.df) == "V3"] <- "ang_S"
-  names(simul.df)[names(simul.df) == "V4"] <- "ang_M_mpi"
-  names(simul.df)[names(simul.df) == "V5"] <- "ecc_M"
-  names(simul.df)[names(simul.df) == "V6"] <- "ang_M"
-  names(simul.df)[names(simul.df) == "V7"] <- "siz_M"
-  names(simul.df)[names(simul.df) == "V8"] <- "mean_ang_M"
   
+  if (network!=TRUE){
+    simul.df <- setnames(simul.df[,1:10], c("data.dir","ang_M_ppi","ang_S","ang_M_mpi","ecc_M","ang_M","siz_M","fitness","opti_A","opti_B"))
+    simul.df[,2:10] <- lapply( simul.df[,2:10], as.numeric)
+  }
+  if (w_of_6==TRUE & network==TRUE) {
+    simul.df <- setnames(simul.df[,1:46], c("data.dir","ang_M_ppi","ang_S","ang_M_mpi","ecc_M","ang_M","siz_M","fitness","opti_A","opti_B",
+                               "A_A","B_A","C_A","D_A","E_A","F_A","A_B","B_B","C_B","D_B","E_B","F_B","A_C","B_C","C_C","D_C","E_C","F_C",
+                               "A_D","B_D","C_D","D_D","E_D","F_D","A_E","B_E","C_E","D_E","E_E","F_E","A_F","B_F","C_F","D_F","E_F","F_F"))
+    simul.df[,2:46] <- lapply( simul.df[,2:46], as.numeric)
+  }
   if (w_of_4==TRUE & network==TRUE) {
     #Naming network cells (for 4 genes network)
     names(simul.df)[names(simul.df) == "V10"] <- "B_A"
@@ -694,7 +805,7 @@ df.topo.wide.m<- function(sims.dir, w_of_4=TRUE, network=TRUE){
     names(simul.df)[names(simul.df) == "V21"] <- "A_D"
     names(simul.df)[names(simul.df) == "V22"] <- "B_D"
     names(simul.df)[names(simul.df) == "V23"] <- "C_D"
-    simul.df[,9:24] <- lapply( simul.df[,9:24], as.numeric)
+    simul.df[,9:25] <- lapply( simul.df[,9:25], as.numeric)
   }
   return(simul.df)
 }
@@ -732,9 +843,9 @@ df.opt.map2 <- function(sims.dir, modulo=pi, bymean=FALSE, gen=FALSE){
   df.all <- data.frame(NULL)
     df <- df.raster.map(sims.dir, modulo=modulo, all.gen=gen)
     pop <- str_split(sims.dir, "../../simul/fig_3_bis/", n=2, simplify = TRUE)
-    df[,9] <- sprintf("%s", pop[,2])
+    df$pop <- sprintf("%s", pop[,2])
     opti <- sub("-R.*", "", df$data.dir)
-    df[,10] <- sprintf("%s", opti)
+    df$opt <- sprintf("%s", opti)
     df.all <- rbind(df.all, df)
   return(df.all)
   #This part add a column : Xi_a calculated from the mean M angle. 
@@ -752,19 +863,19 @@ df.opt.map2 <- function(sims.dir, modulo=pi, bymean=FALSE, gen=FALSE){
   }
 }
 
-df.data <- function(sims.dirs, modulo=pi, pattern="../../simul/", variable="population", network=FALSE){
+df.data <- function(sims.dirs, modulo=pi, pattern="../../simul/", variable="population", network=FALSE, w_of_6=FALSE, file_size=100000){
   df.datas <- data.frame(NULL)
   for (i in sims.dirs) {
     sims.dir <- list.dirs(i)[2:length(list.dirs(i))]
-    df <- df.topo.wide.m(sims.dir, network=network)
-    df[,9] <- modulo.all(df$ang_M-df$ang_S, modulo = modulo)
-    sq_rho <- round(mse.ms(df[,9]), 4)
+    df <- df.topo.wide.m(sims.dir, network=network, w_of_6=w_of_6, file_size=file_size)
+    # df[,9] <- modulo.all(df$ang_M-df$ang_S, modulo = modulo)
+    # sq_rho <- round(mse.ms(df[,9]), 4)
     pop <- str_split(i, pattern, n=2, simplify = TRUE)
-    df[,10] <- sprintf("%s", pop[,2])
+    df$pop <- sprintf("%s", pop[,2])
     df.datas <- rbind(df.datas, df)
   }
-  names(df.datas)[names(df.datas) == "V9"] <- "ang_diff"
-  names(df.datas)[names(df.datas) == "V10"] <- variable
+  # names(df.datas)[names(df.datas) == "V9"] <- "ang_diff"
+  # names(df.datas)[names(df.datas) == "V10"] <- variable
   return(df.datas)
 }
 

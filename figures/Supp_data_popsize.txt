@@ -1,7 +1,0 @@
-Interpretations Supp_data_popsize
-
-
-A bigger population size does not decrease the variance when there is no connections between A and B. So, should we cmpute the alignment index including variance ? As using the does make loose information that is NOT due to population size. 
-
-
-+ Not enough repicates for the 10000 full network pop

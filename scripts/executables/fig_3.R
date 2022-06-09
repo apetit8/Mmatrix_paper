@@ -1,132 +1,131 @@
 source("../functions_R/All_functions.R")
-########################################################################################################################
-sims.dirs <- list.dirs(
-  "../../simul/fig_3/rnul", recursive = FALSE
-)
-of        <- "fig3"
+library(png)
+#####################
+sims.dirs <- list.dirs("../../simul/fig_3", recursive = FALSE)
 modulo <- pi
 #####################
 
-df.rnul <- df.opt.map(sims.dirs, modulo=modulo)
+#Data
+df.fig3 <- df.data(sims.dirs, pattern = "../../simul/fig_3/", variable="netw", file_size=15000, w_of_6=TRUE, network=FALSE)
 
-g1 <- ggplot(df.rnul, aes(x=P_mean_A, y=P_mean_B, z=sq_dist))+
-  coord_fixed(ratio = 1, xlim = c(-1.125,1.125), ylim = c(-1.125,1.125), expand = TRUE, clip = "on")+
-  stat_summary_2d(breaks = seq(-1.125, 1.125, by = 0.25), fun = "mean", show.legend = FALSE)+
-  scale_fill_viridis_c(option = "plasma", limits=c(-0.02, 1))+
-  geom_point(aes(y=0, x=0))+
-  labs(title =  ("A/ Without initial AB regulation"), x="Expression gene A", y="Expression gene B")+
-  labs(fill = expression("\u03BE\u03B1"))
+netw_names <- as_labeller(c(
+  `1-full_-0.5_fixed` = "A/ AB regulation fixed at -0.5",
+  `4-full_-0.5` = "D/ AB regulation starting at -0.5",
+  `3-full_0_fixed` = "C/ AB regulation fixed at 0",
+  `5-full_0.5` = "E/ AB regulation starting at 0.5",
+  `2-full_0.5_fixed` = "B/ AB regulation fixed at 0.5"
+))
 
-######################
-sims.dirs.5 <- list.dirs(
-  "../../simul/fig_3/rneg", recursive = FALSE
-)
-modulo <- pi
-#####################
+#With eccentricity
+pfig3 <- ggplot(data=df.fig3, aes(ang_S, ang_M))+
+  coord_fixed(ratio = 1, xlim = c(-1.5,1.5), ylim = c(-pi/2-0.2,pi/2+0.2), expand = TRUE, clip = "on")+
+  geom_abline(colour="#666666")+
+  geom_abline(intercept=pi, colour="#666666")+
+  geom_abline(intercept=-pi, colour="#666666")+
+  geom_point(aes(y=ang_M, col=1-ecc_M), alpha=0.16, show.legend = FALSE)+
+  geom_point(aes(y=ang_M_mpi, col=1-ecc_M), alpha=0.16, show.legend = FALSE)+
+  geom_point(aes(y=ang_M_ppi, col=1-ecc_M), alpha=0.16, show.legend = TRUE)+
+  labs(y="M direction", x="S direction", fill = expression("\u03BE\u03B1"))+
+  scale_color_viridis_c(option = "plasma")+
+  labs(col = "M Eccentricity")+
+  scale_x_continuous(breaks=c(0, pi/4, pi/2, -pi/4, -pi/2),
+                     labels=c("0", "\u03c0/4", "\u03c0/2","-\u03c0/4", "-\u03c0/2"))+
+  scale_y_continuous(breaks=c(0, pi/4, pi/2, -pi/4, -pi/2),
+                     labels=c("0", "\u03c0/4", "\u03c0/2","-\u03c0/4", "-\u03c0/2"))
+pfig3 <- pfig3 + facet_wrap(pop ~., labeller = as_labeller(netw_names),  ncol=3) +
+  theme_bw()+ theme(plot.margin = unit(c(3, 0, 0, 0), "cm")) #, strip.text = element_blank()
+pfig3
 
-df.rneg <- df.opt.map(sims.dirs.5)
 
-g3 <-   ggplot(df.rneg, aes(x=P_mean_A, y=P_mean_B, z=sq_dist))+
-  coord_fixed(ratio = 1, xlim = c(-1.125,1.125), ylim = c(-1.125,1.125), expand = TRUE, clip = "on")+
-  stat_summary_2d(breaks = seq(-1.125, 1.125, by = 0.25), fun = "mean")+
-  scale_fill_viridis_c(option = "plasma", limits=c(-0.02, 1))+
-  labs(title =  ("C/ Negative initial AB regulation"), x="Expression gene A", y="Expression gene B")+
-  labs(fill = expression("\u03BE\u03B1"))
-g3
+png.netw1 = readPNG('../../templates/fig_3/networks.png')
 
-######################
-sims.dirs.6 <- list.dirs(
-  "../../simul/fig_3/rpos2", recursive = FALSE
-)
-modulo <- pi
-#####################
-
-df.rpos<- df.opt.map(sims.dirs.6)
-
-g4 <- ggplot(df.rpos, aes(x=P_mean_A, y=P_mean_B, z=sq_dist))+
-  coord_fixed(ratio = 1, xlim = c(-1.125,1.125), ylim = c(-1.125,1.125), expand = TRUE, clip = "on")+
-  stat_summary_2d(breaks = seq(-1.125, 1.125, by = 0.25), fun = "mean", show.legend = FALSE)+
-  scale_fill_viridis_c(option = "plasma", limits=c(-0.02, 1))+
-  labs(title =  ("B/ Positive initial AB regulation"), x="Expression gene A", y="Expression gene B")+
-  labs(fill = expression("\u03BE\u03B1"))
-g4
-
-#################################
-# PDF
-#################################
-
-pdfname   <- print("../../figures/fig3-1.pdf")
-cairo_pdf(pdfname, width=9, height=8)
+cairo_pdf("../../figures/fig_3.pdf", width=10, height=9)
 grid.arrange(
-  g1,g3,g4,
-  ncol = 2,
-  nrow = 2,
-  widths = c(1,1),
+  pfig3,
+  ncol = 1,
+  nrow = 1,
+  widths = c(1),
+  clip = FALSE
+)
+grid.raster(png.netw1, x=0.46, y=0.92, width=0.7)
+dev.off()
+
+
+
+
+pfig3 <- ggplot(data=df.fig3, aes(ang_S, ang_M,col=netw))+
+  coord_fixed(ratio = 1, xlim = c(-1.5,1.5), ylim = c(-pi/2-0.2,pi/2+0.2), expand = TRUE, clip = "on")+
+  geom_abline(colour="#666666")+
+  geom_abline(intercept=pi, colour="#666666")+
+  geom_abline(intercept=-pi, colour="#666666")+
+  #previously : alpha of 0.1
+  geom_point(aes(y=ang_M, col=pop), alpha=0.16, show.legend = FALSE)+
+  geom_point(aes(y=ang_M_mpi, col=pop), alpha=0.16, show.legend = FALSE)+
+  geom_point(aes(y=ang_M_ppi, col=pop), alpha=0.16, show.legend = TRUE)+
+  # geom_point(aes(y=mean_ang_M, fill=netw), show.legend = FALSE)+
+  labs(y="M direction", x="S direction", fill = expression("\u03BE\u03B1"))+
+  scale_color_discrete(name=expression("\u03BE\u03B1"),
+                       labels=c("0.676", "0.403", "0.025","0.985", "0.505","0.373"))
+
+pfig3 <- pfig3 + scale_x_continuous(breaks=c(0, pi/4, pi/2, -pi/4, -pi/2),
+                                    labels=c("0", "\u03c0/4", "\u03c0/2","-\u03c0/4", "-\u03c0/2"))+
+  scale_y_continuous(breaks=c(0, pi/4, pi/2, -pi/4, -pi/2),
+                     labels=c("0", "\u03c0/4", "\u03c0/2","-\u03c0/4", "-\u03c0/2"))
+pfig3 <- pfig3 + facet_wrap(pop ~., labeller = as_labeller(netw_names),  ncol=3) + theme(strip.background = element_blank())+ theme_bw() #, strip.text = element_blank()
+pfig3
+
+
+cairo_pdf("../../figures/fig_3_color.pdf", width=10, height=7)
+grid.arrange(
+  pfig3,
+  ncol = 1,
+  nrow = 1,
+  widths = c(1),
   clip = FALSE
 )
 dev.off()
 
-pdfname   <- print("../../figures/fig3.pdf")
-cairo_pdf(pdfname, width=13, height=4.5)
-grid.arrange(
-  g1,g4,g3,
-  ncol = 3,
-  nrow = 1,
-  widths = c(1,1,1.22),
-  clip = FALSE
-)
-dev.off()
-
-# library("DataCombine")
-# dftest <- grepl.sub(data=df.all, pattern="FITNESS_OPTIMUM-0.5-FITNESS_OPTIMUM2-0.5", Var="V10", keep.found = TRUE)
-# ggplot(data=dftest, aes(ang_S, ang_M, col=V11))+
-#   coord_fixed(ratio = 1, xlim = c(-pi/2,pi/2), ylim = c(-pi/2,pi/2), expand = TRUE, clip = "on")+
-#   geom_abline()+
-#   labs(title = ("A/ M angle distribution and mean for different S angle"), y="M Angle", x="S Angle")+
-#   geom_point()+
-#   geom_smooth(alpha = 0, method = "AngleSmooth", span=0.9, level = 0.95)
-# 
-# mean(dftest$V11)
-# mean(dftest$sq_dist)
 
 
 
-######################
-sims.dirs.1 <- list.dirs(
-  "../../simul/fig_3/rround", recursive = FALSE
-)
+
+
+
+#####################
+sims.dirs <- list.dirs("../../simul/witness", recursive = FALSE)
 modulo <- pi
 #####################
 
-df.rround <- df.opt.map(sims.dirs.1)
+#Data
+df.fig3 <- df.data(sims.dirs, pattern = "../../simul/witness/", variable="netw", file_size=15000, w_of_6=TRUE, network=FALSE)
 
+pfig3 <- ggplot(data=df.fig3, aes(ang_S, ang_M,col=netw))+
+  coord_fixed(ratio = 1, xlim = c(-1.5,1.5), ylim = c(-pi/2-0.2,pi/2+0.2), expand = TRUE, clip = "on")+
+  geom_abline(colour="#666666")+
+  geom_abline(intercept=pi, colour="#666666")+
+  geom_abline(intercept=-pi, colour="#666666")+
+  #previously : alpha of 0.1
+  geom_point(aes(y=ang_M, col=pop), alpha=0.16, show.legend = FALSE)+
+  geom_point(aes(y=ang_M_mpi, col=pop), alpha=0.16, show.legend = FALSE)+
+  geom_point(aes(y=ang_M_ppi, col=pop), alpha=0.16, show.legend = TRUE)+
+  # geom_point(aes(y=mean_ang_M, fill=netw), show.legend = FALSE)+
+  labs(y="M direction", x="S direction", fill = expression("\u03BE\u03B1"))+
+  scale_color_discrete(name=expression("\u03BE\u03B1"),
+                       labels=c("0.676", "0.403", "0.025","0.985", "0.505","0.373"))
 
-g2 <- ggplot(df.rround, aes(x=P_mean_A, y=P_mean_B, z=ang_M))+
-  coord_fixed(ratio = 1, xlim = c(-1.125,1.125), ylim = c(-1.125,1.125), expand = TRUE, clip = "on")+
-  stat_summary_2d(breaks = seq(-1.125, 1.125, by = 0.25), fun = st_dev_abs)+
-  # stat_summary_2d(breaks = c(-1.25,-0.75, -0.25, 0.25, 0.75, 1.25), fun = Angle_Mean)+
-  scale_fill_viridis_c(option = "mako", limits=c(0, 1))+
-  geom_point(aes(y=0, x=0))+
-  labs(title = ("A/ Angle SD for different optimum \nphenotypes with no correlation of selection"), x="Expression gene A", y="Expression gene B")+
-  labs(fill = "Ma sd")
+pfig3 <- pfig3 + scale_x_continuous(breaks=c(0, pi/4, pi/2, -pi/4, -pi/2),
+                                    labels=c("0", "\u03c0/4", "\u03c0/2","-\u03c0/4", "-\u03c0/2"))+
+  scale_y_continuous(breaks=c(0, pi/4, pi/2, -pi/4, -pi/2),
+                     labels=c("0", "\u03c0/4", "\u03c0/2","-\u03c0/4", "-\u03c0/2"))
+pfig3 <- pfig3 + facet_wrap(pop ~., labeller = as_labeller(netw_names),  ncol=3) + theme(strip.background = element_blank())+ theme_bw() #, strip.text = element_blank()
+pfig3
 
-g22 <- ggplot(df.rround, aes(x=P_mean_A, y=P_mean_B, z=ang_M))+
-  coord_fixed(ratio = 1, xlim = c(-1.125,1.125), ylim = c(-1.125,1.125), expand = TRUE, clip = "on")+
-  stat_summary_2d(breaks = seq(-1.125, 1.125, by = 0.25), fun = Angle_Mean)+
-  scale_fill_viridis_c(option = "mako", limits=c(-pi/2, pi/2))+
-  geom_point(aes(y=0, x=0))+
-  labs(title = ("A/ Angle mean for different optimum \nphenotypes with no correlation of selection"), x="Expression gene A", y="Expression gene B")+
-  labs(fill = "Mean \u03B1")
-g22
-
-
-pdfname   <- print("../../figures/fig3-2.pdf")
-cairo_pdf(pdfname, width=9, height=4)
+cairo_pdf("../../figures/fig_witness.pdf", width=4, height=5)
 grid.arrange(
-  g2,g22,
-  ncol = 2,
+  pfig3,
+  ncol = 1,
   nrow = 1,
-  widths = c(1,1),
+  widths = c(1),
   clip = FALSE
 )
 dev.off()
