@@ -10,9 +10,7 @@ df.fig3 <- df.data(sims.dirs, pattern = "../../simul/fig_3/", variable="netw", f
 
 netw_names <- as_labeller(c(
   `1-full_-0.5_fixed` = "A/ AB regulation fixed at -0.5",
-  `4-full_-0.5` = "D/ AB regulation starting at -0.5",
   `3-full_0_fixed` = "C/ AB regulation fixed at 0",
-  `5-full_0.5` = "E/ AB regulation starting at 0.5",
   `2-full_0.5_fixed` = "B/ AB regulation fixed at 0.5"
 ))
 
@@ -25,7 +23,7 @@ pfig3 <- ggplot(data=df.fig3, aes(ang_S, ang_M))+
   geom_point(aes(y=ang_M, col=1-ecc_M), alpha=0.16, show.legend = FALSE)+
   geom_point(aes(y=ang_M_mpi, col=1-ecc_M), alpha=0.16, show.legend = FALSE)+
   geom_point(aes(y=ang_M_ppi, col=1-ecc_M), alpha=0.16, show.legend = TRUE)+
-  labs(y="M direction", x="S direction", fill = expression("\u03BE\u03B1"))+
+  labs(y=expression(paste(alpha, "M")), x=expression(paste(alpha, "S")), fill = expression("\u03BE\u03B1"))+
   scale_color_viridis_c(option = "plasma")+
   labs(col = "M Eccentricity")+
   scale_x_continuous(breaks=c(0, pi/4, pi/2, -pi/4, -pi/2),
@@ -33,13 +31,13 @@ pfig3 <- ggplot(data=df.fig3, aes(ang_S, ang_M))+
   scale_y_continuous(breaks=c(0, pi/4, pi/2, -pi/4, -pi/2),
                      labels=c("0", "\u03c0/4", "\u03c0/2","-\u03c0/4", "-\u03c0/2"))
 pfig3 <- pfig3 + facet_wrap(pop ~., labeller = as_labeller(netw_names),  ncol=3) +
-  theme_bw()+ theme(plot.margin = unit(c(3, 0, 0, 0), "cm")) #, strip.text = element_blank()
+  theme_bw()+ theme(plot.margin = unit(c(3.3, 0, 0, 0), "cm")) #, strip.text = element_blank()
 pfig3
 
 
 png.netw1 = readPNG('../../templates/fig_3/networks.png')
 
-cairo_pdf("../../figures/fig_3.pdf", width=10, height=9)
+cairo_pdf("../../figures/fig_3.pdf", width=10, height=5.8)
 grid.arrange(
   pfig3,
   ncol = 1,
@@ -47,43 +45,43 @@ grid.arrange(
   widths = c(1),
   clip = FALSE
 )
-grid.raster(png.netw1, x=0.46, y=0.92, width=0.7)
+grid.raster(png.netw1, x=0.46, y=0.86, width=0.68)
 dev.off()
 
 
 
-
-pfig3 <- ggplot(data=df.fig3, aes(ang_S, ang_M,col=netw))+
-  coord_fixed(ratio = 1, xlim = c(-1.5,1.5), ylim = c(-pi/2-0.2,pi/2+0.2), expand = TRUE, clip = "on")+
-  geom_abline(colour="#666666")+
-  geom_abline(intercept=pi, colour="#666666")+
-  geom_abline(intercept=-pi, colour="#666666")+
-  #previously : alpha of 0.1
-  geom_point(aes(y=ang_M, col=pop), alpha=0.16, show.legend = FALSE)+
-  geom_point(aes(y=ang_M_mpi, col=pop), alpha=0.16, show.legend = FALSE)+
-  geom_point(aes(y=ang_M_ppi, col=pop), alpha=0.16, show.legend = TRUE)+
-  # geom_point(aes(y=mean_ang_M, fill=netw), show.legend = FALSE)+
-  labs(y="M direction", x="S direction", fill = expression("\u03BE\u03B1"))+
-  scale_color_discrete(name=expression("\u03BE\u03B1"),
-                       labels=c("0.676", "0.403", "0.025","0.985", "0.505","0.373"))
-
-pfig3 <- pfig3 + scale_x_continuous(breaks=c(0, pi/4, pi/2, -pi/4, -pi/2),
-                                    labels=c("0", "\u03c0/4", "\u03c0/2","-\u03c0/4", "-\u03c0/2"))+
-  scale_y_continuous(breaks=c(0, pi/4, pi/2, -pi/4, -pi/2),
-                     labels=c("0", "\u03c0/4", "\u03c0/2","-\u03c0/4", "-\u03c0/2"))
-pfig3 <- pfig3 + facet_wrap(pop ~., labeller = as_labeller(netw_names),  ncol=3) + theme(strip.background = element_blank())+ theme_bw() #, strip.text = element_blank()
-pfig3
-
-
-cairo_pdf("../../figures/fig_3_color.pdf", width=10, height=7)
-grid.arrange(
-  pfig3,
-  ncol = 1,
-  nrow = 1,
-  widths = c(1),
-  clip = FALSE
-)
-dev.off()
+# 
+# pfig3 <- ggplot(data=df.fig3, aes(ang_S, ang_M,col=netw))+
+#   coord_fixed(ratio = 1, xlim = c(-1.5,1.5), ylim = c(-pi/2-0.2,pi/2+0.2), expand = TRUE, clip = "on")+
+#   geom_abline(colour="#666666")+
+#   geom_abline(intercept=pi, colour="#666666")+
+#   geom_abline(intercept=-pi, colour="#666666")+
+#   #previously : alpha of 0.1
+#   geom_point(aes(y=ang_M, col=pop), alpha=0.16, show.legend = FALSE)+
+#   geom_point(aes(y=ang_M_mpi, col=pop), alpha=0.16, show.legend = FALSE)+
+#   geom_point(aes(y=ang_M_ppi, col=pop), alpha=0.16, show.legend = TRUE)+
+#   # geom_point(aes(y=mean_ang_M, fill=netw), show.legend = FALSE)+
+#   labs(y="M direction", x="S direction", fill = expression("\u03BE\u03B1"))+
+#   scale_color_discrete(name=expression("\u03BE\u03B1"),
+#                        labels=c("0.676", "0.403", "0.025","0.985", "0.505","0.373"))
+# 
+# pfig3 <- pfig3 + scale_x_continuous(breaks=c(0, pi/4, pi/2, -pi/4, -pi/2),
+#                                     labels=c("0", "\u03c0/4", "\u03c0/2","-\u03c0/4", "-\u03c0/2"))+
+#   scale_y_continuous(breaks=c(0, pi/4, pi/2, -pi/4, -pi/2),
+#                      labels=c("0", "\u03c0/4", "\u03c0/2","-\u03c0/4", "-\u03c0/2"))
+# pfig3 <- pfig3 + facet_wrap(pop ~., labeller = as_labeller(netw_names),  ncol=3) + theme(strip.background = element_blank())+ theme_bw() #, strip.text = element_blank()
+# pfig3
+# 
+# 
+# cairo_pdf("../../figures/fig_3_color.pdf", width=10, height=7)
+# grid.arrange(
+#   pfig3,
+#   ncol = 1,
+#   nrow = 1,
+#   widths = c(1),
+#   clip = FALSE
+# )
+# dev.off()
 
 
 
@@ -117,7 +115,7 @@ pfig3 <- pfig3 + scale_x_continuous(breaks=c(0, pi/4, pi/2, -pi/4, -pi/2),
                                     labels=c("0", "\u03c0/4", "\u03c0/2","-\u03c0/4", "-\u03c0/2"))+
   scale_y_continuous(breaks=c(0, pi/4, pi/2, -pi/4, -pi/2),
                      labels=c("0", "\u03c0/4", "\u03c0/2","-\u03c0/4", "-\u03c0/2"))
-pfig3 <- pfig3 + facet_wrap(pop ~., labeller = as_labeller(netw_names),  ncol=3) + theme(strip.background = element_blank())+ theme_bw() #, strip.text = element_blank()
+pfig3 <- pfig3 + facet_wrap(pop ~., labeller = as_labeller(netw_names),  ncol=3, as.table = F) + theme(strip.background = element_blank())+ theme_bw() #, strip.text = element_blank()
 pfig3
 
 cairo_pdf("../../figures/fig_witness.pdf", width=4, height=5)

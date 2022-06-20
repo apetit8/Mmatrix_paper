@@ -64,6 +64,11 @@ extract.fitness <- function(tt, what="Mfit", gen=tt[nrow(tt), "Gen"]) {
   return(ex)
 }
 
+extract.correlation <- function(tt, gen=tt[nrow(tt), "Gen"]) {
+  M.mat <- extract.M.matrix(tt, gen=gen)
+  ex <- (M.mat[1,2])/(sqrt(M.mat[1,1]) * sqrt(M.mat[2,2]) )
+  return(ex)
+}
 
 extract.P.matrix <- function(tt, gen=tt[nrow(tt),"Gen"]) {
   extract.matrix(tt, "CovPhen", gen=gen)
@@ -434,10 +439,18 @@ draw.ellipses <- function(G.mat=NULL, M.mat=NULL, S.mat=NULL, G.centre=c(0,0), M
   }
 }
 
-#Draw ellipses of multiple destinations into one plot
-oneplot.allellipse <- function(data.dirs, xlim=NULL, ylim=NULL, xlab="Trait A", ylab="Trait B", 
-                               S.factor=0.00005, M.factor=1,  G.factor=1, 
-                               asp=1, all.gen=FALSE, all.reps=FALSE, legend=TRUE, ...) {
+#Draw ellipses from multiple files into one plot
+oneplot.allellipse <- function(data.dirs, xlim=NULL, ylim=NULL, xlab="Trait A", ylab="Trait B", Sell=TRUE, Mell=TRUE,
+                               S.factor=0.00005, M.factor=1,  G.factor=1, xcoord=c(2000, 10000),ycoord=c(-1, 1.6),
+                               asp=1, all.gen=FALSE, all.reps=FALSE, legend=TRUE, another_plot=FALSE, ...) {
+  
+  if (another_plot==TRUE){
+  par(fig = c(grconvertX(xcoord, from="user", to="ndc"),
+              grconvertY(ycoord, from="user", to="ndc")),
+      mar = c(4,6,1,1),
+      new = TRUE) #Ne fonctionne pas car : l'autre plot est tracé dans la fonction ... ...
+    }
+  
   plot(NULL, xlim=xlim, ylim=ylim, xlab=xlab, ylab=ylab, asp=asp,  ...)
 
   for (data.dir in data.dirs) {
@@ -475,8 +488,8 @@ oneplot.allellipse <- function(data.dirs, xlim=NULL, ylim=NULL, xlab="Trait A", 
       # Mean over replicates
       phen.mean <- extract.P.mean(simuls.mean, gen=gen)
       draw.ellipses(
-        M.mat=extract.M.matrix(simuls.mean, gen=gen),
-        S.mat=if(gen==mygens[1]) extract.S.matrix(param.file) else NULL,
+        M.mat=if(Mell==TRUE) extract.M.matrix(simuls.mean, gen=gen) else NULL,
+        S.mat=if(gen==mygens[1] && Sell==TRUE) extract.S.matrix(param.file) else NULL,
         G.centre=phen.mean, S.centre=extract.theta(param.file),
         M.factor=M.factor, S.factor=S.factor,
         mat.col=mat.col, xlab=xlab, ylab=ylab, xlim=xlim, ylim=ylim,
@@ -765,14 +778,15 @@ df.topo.wide.m<- function(sims.dir, w_of_4=FALSE, w_of_6=FALSE, network=FALSE, f
       M.ang <- matrix.features(M.mat,n.genes=2)[["angle"]][1] #M matrix
       M.feat3 <- matrix.features(M.mat,n.genes=2)[["size"]][1] #M matrix
       fitness <- extract.fitness(tt, "MFit", gen=gen)
-      opt1 <- extract.fitness(tt, "FitOpt1", gen=gen)[1]
+      # opt1 <- extract.fitness(tt, "FitOpt1", gen=gen)[1]
+      corr <- extract.correlation(tt, gen=gen)
       opt2 <- extract.fitness(tt, "FitOpt2", gen=gen)[1]
       if (network==TRUE){
         Wmat <- extract.W.matrix(tt) #W data
-        new <- c(ff, M.ang_ppi, S.ref2, M.ang_mpi, M.feat1, M.ang, M.feat3, fitness, opt1, opt2, Wmat )
+        new <- c(ff, M.ang_ppi, S.ref2, M.ang_mpi, M.feat1, M.ang, M.feat3, fitness, corr, Wmat )
       }
       if (network!=TRUE){
-        new <- c(ff, M.ang_ppi, S.ref2, M.ang_mpi, M.feat1, M.ang, M.feat3, fitness, opt1, opt2 )
+        new <- c(ff, M.ang_ppi, S.ref2, M.ang_mpi, M.feat1, M.ang, M.feat3, fitness, corr )
       }
       return(new)
       #create a list of data
@@ -782,14 +796,14 @@ df.topo.wide.m<- function(sims.dir, w_of_4=FALSE, w_of_6=FALSE, network=FALSE, f
   }
   
   if (network!=TRUE){
-    simul.df <- setnames(simul.df[,1:10], c("data.dir","ang_M_ppi","ang_S","ang_M_mpi","ecc_M","ang_M","siz_M","fitness","opti_A","opti_B"))
-    simul.df[,2:10] <- lapply( simul.df[,2:10], as.numeric)
+    simul.df <- setnames(simul.df[,1:9], c("data.dir","ang_M_ppi","ang_S","ang_M_mpi","ecc_M","ang_M","siz_M","fitness","corr"))
+    simul.df[,2:9] <- lapply( simul.df[,2:9], as.numeric)
   }
   if (w_of_6==TRUE & network==TRUE) {
-    simul.df <- setnames(simul.df[,1:46], c("data.dir","ang_M_ppi","ang_S","ang_M_mpi","ecc_M","ang_M","siz_M","fitness","opti_A","opti_B",
+    simul.df <- setnames(simul.df[,1:45], c("data.dir","ang_M_ppi","ang_S","ang_M_mpi","ecc_M","ang_M","siz_M","fitness","corr",
                                "A_A","B_A","C_A","D_A","E_A","F_A","A_B","B_B","C_B","D_B","E_B","F_B","A_C","B_C","C_C","D_C","E_C","F_C",
                                "A_D","B_D","C_D","D_D","E_D","F_D","A_E","B_E","C_E","D_E","E_E","F_E","A_F","B_F","C_F","D_F","E_F","F_F"))
-    simul.df[,2:46] <- lapply( simul.df[,2:46], as.numeric)
+    simul.df[,2:45] <- lapply( simul.df[,2:45], as.numeric)
   }
   if (w_of_4==TRUE & network==TRUE) {
     #Naming network cells (for 4 genes network)
@@ -805,7 +819,7 @@ df.topo.wide.m<- function(sims.dir, w_of_4=FALSE, w_of_6=FALSE, network=FALSE, f
     names(simul.df)[names(simul.df) == "V21"] <- "A_D"
     names(simul.df)[names(simul.df) == "V22"] <- "B_D"
     names(simul.df)[names(simul.df) == "V23"] <- "C_D"
-    simul.df[,9:25] <- lapply( simul.df[,9:25], as.numeric)
+    simul.df[,9:24] <- lapply( simul.df[,9:24], as.numeric)
   }
   return(simul.df)
 }
