@@ -1,4 +1,4 @@
-source("../functions_R/mutsd.R")
+source("../functions_R/All_functions.R")
 #################################
 simevolv =("../../../simevolv/bin/Release/Simul_Prog")
 sims.dir       = ("../../templates/fig_1")

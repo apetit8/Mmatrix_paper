@@ -68,7 +68,7 @@ cairo_pdf("../../figures/fig1_b.pdf", width=6, height=6)
   axis(side=2, at=c(-pi, -pi/2, -pi/4, 0 , pi/4, pi/2, pi), labels=expression(-pi, -pi/2, -pi/4, 0, pi/4, pi/2, pi), mgp = c(1.75, 0.75, 0))
 
   oneplot.allellipse(sims.dir, G.factor=G.factor, S.factor=S.factor, M.factor=M.factor, another_plot=TRUE,
-                     xlim=c(-7,7), ylim=c(-7,7), all.reps=FALSE, xlab="", ylab="",xcoord=c(0, 10000),ycoord=c(-2.5, 0.3),
+                     xlim=c(-7,7), ylim=c(-7,7), all.reps=FALSE, xlab="", ylab="",xcoord=c(0, 10000),ycoord=c(-2.4, 0.3),
                      yaxt = "n", xaxt = "n", legend=legend, asp=1, axes = FALSE,mgp = c(0, 0, 0))
 dev.off()
 #######

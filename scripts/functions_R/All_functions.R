@@ -246,6 +246,8 @@ matrix.features <- function(M, n.genes=ncol(M)) {
   ans$angle <- modulopi(acos(ee$vectors[1,]))
   ans$size <- sum(diag(M))
   ans$eccentricity <- ee$values[2:ncol(M)]/ee$values[1]
+  ans$eccentricity <- sqrt(1-(ee$values[2:ncol(M)]/ee$values[1]))
+  # ans$eccentricity <- (ee$values[1])-(ee$values[2])/ee$values[1]
   ans
 }
 
@@ -354,7 +356,7 @@ mutsd.predict <- function(param.multilin, Vm, reps=10, gen=2000, mlim=c(0.0001, 
   exp(predict(ll, list(log.Vm=log(sum(Vm)))))
 }
 
-calibrate.multilin <- function(param.multilin, param.wagner, gen=2000, traits=1:2, ...) {
+calibrate.multilin <- function(param.multilin, param.wagner, gen=10000, traits=1:2, ...) {
   M.wagner <- M.from.wagner(param.wagner, gen=gen)
   Vm <- M.wagner[traits,traits]
   mst <- mutsd.predict(param.multilin, Vm, gen=gen, traits=traits, ...)
@@ -712,7 +714,7 @@ df.fig1 <- function(sims.dir, modulo=pi, all.gen=FALSE){
   for (i in sims.dir) {
     print(i)
     files     <- list.files(path = i, full.names=TRUE, pattern = "\\.txt$")
-    files <- files[sapply(files, file.size) > 1000]
+    files <- files[sapply(files, file.size) > 15000]
     param.file.all = list.files(path=i, pattern="\\.par$", full.names=TRUE)
     param.file <- as.character(param.file.all[1])
     stopifnot(length(files) >0)
@@ -801,8 +803,8 @@ df.topo.wide.m<- function(sims.dir, w_of_4=FALSE, w_of_6=FALSE, network=FALSE, f
   }
   if (w_of_6==TRUE & network==TRUE) {
     simul.df <- setnames(simul.df[,1:45], c("data.dir","ang_M_ppi","ang_S","ang_M_mpi","ecc_M","ang_M","siz_M","fitness","corr",
-                               "A_A","B_A","C_A","D_A","E_A","F_A","A_B","B_B","C_B","D_B","E_B","F_B","A_C","B_C","C_C","D_C","E_C","F_C",
-                               "A_D","B_D","C_D","D_D","E_D","F_D","A_E","B_E","C_E","D_E","E_E","F_E","A_F","B_F","C_F","D_F","E_F","F_F"))
+                               "a_a","b_a","c_a","d_a","e_a","f_a","a_b","b_b","c_b","d_b","e_b","f_b","a_c","b_c","c_c","d_c","e_c","f_c",
+                               "a_d","b_d","c_d","d_d","e_d","f_d","a_e","b_e","c_e","d_e","e_e","f_e","a_f","b_f","c_f","d_f","e_f","f_f"))
     simul.df[,2:45] <- lapply( simul.df[,2:45], as.numeric)
   }
   if (w_of_4==TRUE & network==TRUE) {

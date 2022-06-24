@@ -9,9 +9,9 @@ modulo <- pi
 df.fig3 <- df.data(sims.dirs, pattern = "../../simul/fig_3/", variable="netw", file_size=15000, w_of_6=TRUE, network=FALSE)
 
 netw_names <- as_labeller(c(
-  `1-full_-0.5_fixed` = "A/ AB regulation fixed at -0.5",
-  `3-full_0_fixed` = "C/ AB regulation fixed at 0",
-  `2-full_0.5_fixed` = "B/ AB regulation fixed at 0.5"
+  `1-full_-0.5_fixed` = "a-b regulations fixed at -0.5",
+  `3-full_0_fixed` = "a-b regulations fixed at 0",
+  `2-full_0.5_fixed` = "a-b regulations fixed at 0.5"
 ))
 
 #With eccentricity
@@ -20,9 +20,9 @@ pfig3 <- ggplot(data=df.fig3, aes(ang_S, ang_M))+
   geom_abline(colour="#666666")+
   geom_abline(intercept=pi, colour="#666666")+
   geom_abline(intercept=-pi, colour="#666666")+
-  geom_point(aes(y=ang_M, col=1-ecc_M), alpha=0.16, show.legend = FALSE)+
-  geom_point(aes(y=ang_M_mpi, col=1-ecc_M), alpha=0.16, show.legend = FALSE)+
-  geom_point(aes(y=ang_M_ppi, col=1-ecc_M), alpha=0.16, show.legend = TRUE)+
+  geom_point(aes(y=ang_M, col=ecc_M), alpha=0.2, show.legend = FALSE)+
+  geom_point(aes(y=ang_M_mpi, col=ecc_M), alpha=0.2, show.legend = FALSE)+
+  geom_point(aes(y=ang_M_ppi, col=ecc_M), alpha=0.2, show.legend = TRUE)+
   labs(y=expression(paste(alpha, "M")), x=expression(paste(alpha, "S")), fill = expression("\u03BE\u03B1"))+
   scale_color_viridis_c(option = "plasma")+
   labs(col = "M Eccentricity")+
