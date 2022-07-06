@@ -32,7 +32,7 @@ pfig1de <- ggplot(data=df.fig1de, aes(ang_S, ang_M))+
 pfig1de <- pfig1de + facet_wrap(pop ~., labeller = as_labeller(netw_names),  ncol=3) + theme(strip.background = element_blank())+ theme_bw() #, strip.text = element_blank()
 pfig1de
 
-cairo_pdf("../../figures/fig_1de.pdf", width=7, height=4)
+cairo_pdf("../../figures/fig1_de.pdf", width=7, height=4)
 grid.arrange(
   pfig1de,
   ncol = 1,

@@ -1,6 +1,6 @@
 source("../functions_R/All_functions.R")
 #########################################
-sims.dirs <- list.dirs("../../simul/fig_1", recursive = FALSE)
+sims.dirs <- list.dirs("../../simul/fig_1abc", recursive = FALSE)
 angle = c(0.785, 0, -0.393)
 of        <- "fig1"
 modulo <- pi
@@ -15,7 +15,7 @@ df.m.s.gen <- data.frame()
 for (i in angle) {
   sims.dir  <- list.files(path=sims.dirs, pattern=sprintf("angle%s.parangle", i), full.names=TRUE)
   df <- df.fig1(sims.dir, all.gen=TRUE)
-  pop <- str_split(df$data.dir, "../../simul/fig_1/", n=2, simplify = TRUE)
+  pop <- str_split(df$data.dir, "../../simul/fig_1abc/", n=2, simplify = TRUE)
   df[,9] <- sprintf("%s", pop[,2])
   model <- str_split(pop[,2], "/simuangle", n=2, simplify = TRUE)
   df[,10] <- sprintf("%s", model[,1])
@@ -35,7 +35,10 @@ cairo_pdf("../../figures/fig1_a.pdf", width=6, height=6)
   dfm <- subset(df.m, round(ang_S, 1) == round(0.785, 1))
   dfw <- subset(df.w, round(ang_S, 1) == round(0.785, 1))
   plot(dfang1$Gen, dfang1$ang_M, ylim =c(-pi/2,pi/2), xlim = c(min(dfang1$Gen), max(dfang1$Gen)),
-       main="", yaxt="n", ylab = expression(paste(alpha, "M")), xlab = "Generation", col=alpha(colors[factor(dfang1$V10)],0.2),mar=c(1, 1, 0, 1), mgp = c(1.75, 0.75, 0))
+       main="", yaxt="n", ylab = expression(paste("Mutational effects direction (",alpha, "M)")), xlab = "Generation", col=alpha(colors[factor(dfang1$V10)],0.2),mar=c(1, 1, 0, 1), mgp = c(1.75, 0.75, 0))
+  # for (i in unique(as.factor(dfang1$data.dir))) {
+  #   lines(  subset(dfang1, data.dir==i)$Gen,  subset(dfang1, data.dir==i)$ang_M, col=alpha(colors[factor(subset(dfang1, data.dir==i)$V10)],0.2)  )
+  # }
   df500 <- subset(dfang1, Gen >= 500)
   bymodel <- by(df500$ang_M, list(df500$Gen, df500$V10), FUN=mean.angle.pi)
   lines(as.numeric(rownames(bymodel)), bymodel[,"m"], col="darkblue", lwd = 3)

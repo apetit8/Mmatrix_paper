@@ -6,7 +6,7 @@ def.e <-  sqrt(1-(0.12)) #eccentricity S
 def.s <- 10 #size S
 #
 ################################################################################
-#Print paramfiles Figure 1
+#Print paramfiles Figure 1, panels A, B, C
 #####################
 values <- list(-pi/8, pi/8, 0, pi/4, 3*pi/8, 0) #Angle values
 #####################
@@ -42,7 +42,7 @@ for (sims.dir in sims.dirs) {
 print("Wagner paramfiles fig 1 : done !")
 
 ################################################################################
-#Print paramfiles Figure 2
+#Print paramfiles Figure 1 panel D, E + Figure 2 (PLS)
 #####################
 sims.dirs <- list.dirs("../../templates/fig_1de", recursive = FALSE)
 #####################
