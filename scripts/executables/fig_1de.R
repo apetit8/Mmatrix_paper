@@ -22,7 +22,7 @@ pfig1de <- ggplot(data=df.fig1de, aes(ang_S, ang_M))+
   geom_point(aes(y=ang_M, col=ecc_M), alpha=0.2, show.legend = FALSE)+
   geom_point(aes(y=ang_M_mpi, col=ecc_M), alpha=0.2, show.legend = FALSE)+
   geom_point(aes(y=ang_M_ppi, col=ecc_M), alpha=0.2, show.legend = TRUE)+
-  labs(y=expression(paste(alpha, "M")), x=expression(paste(alpha, "S")), fill = expression("\u03BE\u03B1"))+
+  labs(y=expression(paste("Direction of mutational effects, ",alpha, "M")), x=expression(paste("Fitness function, ",alpha, "S")), fill = expression("\u03BE\u03B1"))+
   scale_color_viridis_c(option = "plasma")+
   labs(col = "M Eccentricity")+
   scale_x_continuous(breaks=c(0, pi/4, pi/2, -pi/4, -pi/2),
@@ -41,6 +41,8 @@ grid.arrange(
   clip = FALSE
 )
 dev.off()
+
+#ggplot(df.fig1de, aes(x = ang_M, y=fitness))+ geom_point()
 
 ################################################################################
 

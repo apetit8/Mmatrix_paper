@@ -1,14 +1,14 @@
 source("../functions_R/All_functions.R")
 library(png)
 library(igraph)
+library(ggstatsplot)
+library(tidyverse)
 #####################
 sims.dirs <-  list.dirs("../../simul/fig_4", recursive = FALSE)
 #####################
+
 df.fig4 <- df.data(sims.dirs, pattern = "../../simul/fig_4/", variable="netw", file_size=15000, w_of_6=TRUE, network=TRUE)
 
-
-library(ggstatsplot)
-library(tidyverse)
 plt <- ggbetweenstats(
   data = df.fig4,
   x = pop,
