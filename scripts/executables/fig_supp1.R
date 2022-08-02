@@ -23,19 +23,19 @@ tW4[1,2] <- tW4[2,1] <- 0.5
 oa2 <- optimW.alpharange(tW2, n.points=n.points, sigP=0.1)
 pdf("../../figures/fig_supp1_A.pdf", width=fig.width, height=fig.height)
   .plot_oa(oa2)
-  title("A-B = 0", outer=TRUE, line=-3)
+  title("a-b regulations fixed at 0", outer=TRUE, line=-3)
 dev.off()
 
 oa4 <- optimW.alpharange(tW4, n.points=n.points, sigP=0.1)
 pdf("../../figures/fig_supp1_B.pdf", width=fig.width, height=fig.height)
 .plot_oa(oa4)
-title("A-B = +0.5", outer=TRUE, line=-3)
+title("a-b regulations fixed at +0.5", outer=TRUE, line=-3)
 dev.off()
 
 oa3 <- optimW.alpharange(tW3, n.points=n.points, sigP=0.1)
 pdf("../../figures/fig_supp1_C.pdf",width=fig.width, height=fig.height)
   .plot_oa(oa3)
-  title("A-B = -0.5", outer=TRUE, line=-3)
+  title("a-b regulations fixed at -0.5", outer=TRUE, line=-3)
 dev.off()
 
 
