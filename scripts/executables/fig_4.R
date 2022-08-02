@@ -28,7 +28,7 @@ plt
 
 png.netw1 = readPNG('../../templates/fig_4/networks_fig4.png')
 
-cairo_pdf("../../figures/fig_distances.pdf", width=7, height=5.8)
+cairo_pdf("../../figures/fig_4.pdf", width=7, height=5.8)
 grid.arrange(
   plt,
   ncol = 1,

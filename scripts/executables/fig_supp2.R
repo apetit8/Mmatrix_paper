@@ -18,8 +18,8 @@ plt <- ggbetweenstats(
   y = corr,
   centrality.plotting=FALSE,
   plot.type = "box",
-  ggtheme = ggplot2::theme_bw()+theme(plot.margin = unit(c(0.1, 0, 3, 0), "cm")),
-  # ggplot.component = scale_x_discrete(labels = c('Full Network','Direct only','1 intermediate','2 intermediate','3 intermediate')),
+  ggtheme = ggplot2::theme_bw()+theme(plot.margin = unit(c(0.1, 2, 6, 0.1), "cm")),
+  ggplot.component = scale_x_discrete(labels = c('1 intermediate','2 intermediate','2 intermediate','3 intermediate','3 intermediate')),
   pairwise.comparisons=FALSE,
   bf.message=FALSE,
   results.subtitle=FALSE,
@@ -29,9 +29,9 @@ plt <- ggbetweenstats(
 plt
 
 
-png.netw1 = readPNG('../../templates/fig_4/networks_figs2.png')
+png.netw1 = readPNG('../../templates/fig_supp2/networks_supp2.png')
 
-cairo_pdf("../../figures/fig_supp2.pdf", width=7, height=5.8)
+cairo_pdf("../../figures/fig_supp2.pdf", width=8, height=7)
 grid.arrange(
   plt,
   ncol = 1,
@@ -39,6 +39,6 @@ grid.arrange(
   widths = c(1),
   clip = FALSE
 )
-grid.raster(png.netw1, x=0.54, y=0.13, width=0.95)
+grid.raster(png.netw1, x=0.54, y=0.18, width=0.85)
 dev.off()
 

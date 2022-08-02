@@ -245,9 +245,8 @@ matrix.features <- function(M, n.genes=ncol(M)) {
   ans$cor <- cov2cor(M)[upper.tri(M)]
   ans$angle <- modulopi(acos(ee$vectors[1,]))
   ans$size <- sum(diag(M))
-  ans$eccentricity <- ee$values[2:ncol(M)]/ee$values[1]
+  # ans$eccentricity <- ee$values[2:ncol(M)]/ee$values[1]
   ans$eccentricity <- sqrt(1-(ee$values[2:ncol(M)]/ee$values[1]))
-  # ans$eccentricity <- (ee$values[1])-(ee$values[2])/ee$values[1]
   ans
 }
 

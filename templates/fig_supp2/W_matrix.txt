@@ -1,45 +1,6 @@
-Direct & indirect:
- c m m m m m
- m c m m m m
- m m c m m m
- m m m c m m
- m m m m c m
- m m m m m c
- 
- Direct :
- c m m c m c
- m c c m c m
- m c c c m c
- c m c c c m
- m c m c c c
- c m c m c c
- 
- D1:
- c c m m m m
- c c m m m m
- m m c m m m
- m m m c m m
- m m m m c m
- m m m m m c
- 
- D2:
- c c m c m c
- c c c m c m
- m c c c m m
- c m c c m m
- m c m m c m
- c m m m m c
- 
- D3:
- c c m c c c
- c c c m c c
- m c c c m m
- c m c c m m
- c c m m c m
- c c m m m c
 
 
-10G ; 4 genes interacting with A or B
+2 intermediates ; 10G ; 4 genes interacting with A or B
 
  c c m c m c  m c m c
  c c c m c m  c m c m
@@ -47,13 +8,14 @@ Direct & indirect:
  c m m c m m  m m m m
  m c m m c m  m m m m
  c m m m m c  m m m m
+ 
  m c m m m m  c m m m 
  c m m m m m  m c m m 
  m c m m m m  m m c m 
  c m m m m m  m m m c 
 
 
- 18 G ; 4 genes interacting with A or B (two "groups" : CDOPGHKL = do not interact with eachother ; QREFIJMN = interact with everyone but A and B)
+3 intermediates ;  18 G ; 4 genes interacting with A or B (two "groups" : CDOPGHKL = do not interact with eachother ; QREFIJMN = interact with everyone but A and B)
 
    A B C D E F G H I J K L M N O P Q R 
  A c c m c c c m c c c m c c c c m c c
