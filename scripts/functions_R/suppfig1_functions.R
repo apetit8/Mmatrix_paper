@@ -6,13 +6,17 @@ mc.cores <- min(detectCores()-1, 60)
 ########Tools###################################################################
 
 make.sym.mat <- function(m) {
+	# makes a symmetric matrix
 	# upper tri copied in lower tri
 	m[lower.tri(m)] = t(m)[lower.tri(m)]
 	m
 }
 
 M.matrix <- function(W, fixed=NULL, sigmaM=0.1, ...) {
-	
+	# Computes the mutational matrix from the W matrix. 
+	# Note: this computation is deterministic; the M matrix is obtained by applying a +- sigmaM deviation to all 
+	#       mutable components of W. Note that the resulting M matrix will be (hopefully) slightly different from the
+	#       M matrix estimated by sampling mutations from a Gaussian distribution. 
 	ij <- seq_along(W)
 	Ps <- mclapply(ij[!ij %in% fixed], function(i) {
 			myWm <- myWp <- W
@@ -25,6 +29,9 @@ M.matrix <- function(W, fixed=NULL, sigmaM=0.1, ...) {
 
 
 S.matrix <- function(s, optalpha, eccentricity=0.7) {
+	# Computes the variance/covariance matrix of the multivariate Gaussian fitness function corresponding
+	# to a given selection coeffcient (s), a given direction of correlated selection (optalpha) and a given 
+	# eccentricity. 
 	.matrix2.optim <- function(target) {
 		stopifnot(all(names(target) %in% c("cor","angle","size","eccentricity")))
 		stopifnot(length(target) == 3)
@@ -47,6 +54,7 @@ S.matrix <- function(s, optalpha, eccentricity=0.7) {
 }
 
 plotnet <- function(W, gene.names=colnames(W), thresh=0, max=1, col.scale.plus=NULL, col.scale.minus=NULL, lwd.arr=2, ...) {
+	# This routine plots a graphical representation of the network corresponding to the regulatory matrix W.
 	
 	circ.arc    <- function(theta1=0, theta2=2*pi, n=100) 
 		{ tt <- seq(theta1, theta2, length.out=n); cbind(cos(tt), sin(tt)) }
@@ -104,56 +112,8 @@ plotnet <- function(W, gene.names=colnames(W), thresh=0, max=1, col.scale.plus=N
 		}
 	}
 }
-########Simevolv################################################################
 
-sigma.M2 <- function(x, a) {
-  1. / (1. + exp((-x/(a*(a-1)))+log(1/a-1)))
-}
-
-sigma.M2p <- function(x, lambda, mu) {
-  1. / (1. + lambda * exp(-mu*x))
-}
-
-suppressMessages(library(compiler))
-sigma.M2c <- cmpfun(sigma.M2p)
-
-#~ library(Rcpp)
-
-#~ cppFunction('
-#~ NumericVector sigma_M2p(NumericVector x, double aam1, double l1am1) {
-#~     NumericVector ans(x.size());
-#~     // double aam1 = a*(1.-a);
-#~     // double l1am1 = log(1./a-1.);
-#~     for (int i = 0; i < x.size(); i++) {
-#~         ans[i] = 1. / (1. + exp((-x[i]/aam1)+l1am1));
-#~     }
-#~     return ans;
-#~ }
-#~ ')
-
-#~ cppFunction('
-#~ NumericVector sigma_M2(NumericVector x, double a) {
-#~     NumericVector ans(x.size());
-#~     double aam1 = a*(1.-a);
-#~     double l1am1 = log(1./a-1.);
-#~     for (int i = 0; i < x.size(); i++) {
-#~         ans[i] = 1. / (1. + exp((-x[i]/aam1)+l1am1));
-#~     }
-#~     return ans;
-#~ }
-#~ ')
-
-internal_loop_R <- function(W, S0, a, steps, measure) {
-  lambda <- (1-a)/a
-  mu <- 1/(a*(1-a))
-  sto <- matrix(NA, nrow=length(S0), ncol=steps+1)
-  sto[,1] <- S0
-  for (i in 1:steps) {
-    S0 <- sigma.M2c((W %*% S0), lambda=lambda, mu=mu) 			
-    sto[,i+1] <- S0
-  }
-  list(full=sto, sumx=rowSums(sto[,(steps-measure+1):steps]), sumx2=rowSums(sto[,(steps-measure+1):steps]^2))
-}
+######################## Rcpp implementation of the Wagner model ###############
 
 library(Rcpp)
 library(inline, quietly=TRUE)
@@ -190,6 +150,34 @@ cppFunction('
 	}')
 
 
+# For testing and benchmarking purposes: the equivalent function in R
+
+sigma.M2 <- function(x, a) {
+  1. / (1. + exp((-x/(a*(a-1)))+log(1/a-1)))
+}
+
+sigma.M2p <- function(x, lambda, mu) {
+  1. / (1. + lambda * exp(-mu*x))
+}
+
+suppressMessages(library(compiler))
+sigma.M2c <- cmpfun(sigma.M2p)
+
+internal_loop_R <- function(W, S0, a, steps, measure) {
+  lambda <- (1-a)/a
+  mu <- 1/(a*(1-a))
+  sto <- matrix(NA, nrow=length(S0), ncol=steps+1)
+  sto[,1] <- S0
+  for (i in 1:steps) {
+    S0 <- sigma.M2c((W %*% S0), lambda=lambda, mu=mu) 			
+    sto[,i+1] <- S0
+  }
+  list(full=sto, sumx=rowSums(sto[,(steps-measure+1):steps]), sumx2=rowSums(sto[,(steps-measure+1):steps]^2))
+}
+
+
+# Main function to run the Wagner model. The default is to tse the (faster) Rcpp implementation
+
 model.M2 <- function(W, a=0.5, S0=rep(a, nrow(W)), steps=20, measure=4, full=FALSE, loopFUN=internal_loop_cpp) {
   ans <- loopFUN(W, S0, a, steps, measure)
   if (!full) ans$full <- NULL
@@ -199,10 +187,13 @@ model.M2 <- function(W, a=0.5, S0=rep(a, nrow(W)), steps=20, measure=4, full=FAL
 model.M2 <- cmpfun(model.M2)
 
 
-########Optimization pipeline###################################################
+######## Optimization pipeline ###################################################
+
+# Warning: some key parameters (number of genes and optimal shape of the M matrix) are set here. 
 n.genes <- 6
 optim.model <- c("alpha", "fitness")[1]
-#~ optim.model <- "fitness"
+# alpha optimizes M for a given direction, fitness optimizes M for a better fitness of the offspring (conditional to the size of the M matrix)
+# The result of "fitness" is probably not interesting, as the best fitness corresponds to a perfectly canalized network (no mutational effects)
 
 default.set <- list(
   s = c(10, 10, 10, 10, 0, 0),
@@ -221,6 +212,7 @@ default.par <- list(
 )
 
 propW <- function(W, ...) {
+	# Computes various proprertoes of the W matrix (gene expression, M matrix, etc)
   phen <- model.M2(W, ...)
   mut  <- M.matrix(W, ...)
   mut.prop <- matrix.features(mut, n.genes=2)
@@ -228,16 +220,19 @@ propW <- function(W, ...) {
 }
 
 minus.log.fitness.P <- function(P, varP, alphaM, excent, size, s, sp, sa, se, ss, optP, optalpha, optsize) {
+	# Optimization index for the "alpha" model
   ff <- 
     sum(s*(P-optP)^2) + sum(sp*varP) + sa*(modulopi(alphaM-optalpha)^2) + se*(1-excent)^2 + ss*(size-optsize)^2
 }
 
-minus.log.fitness.M <- function(P, varP, optP, s, sp, M, S) {	
+minus.log.fitness.M <- function(P, varP, optP, s, sp, M, S) {
+	# Optimization index for the "fitness" model
   M <- M[1:2,1:2]
   sum(s*(P-optP)^2) + sum(sp*varP) - sqrt(det(S %*% solve(S+M) %*% M)/det(M))
 }
 
 minus.log.fitness.W <- function(W, s, sp, sa, se, ss, optP, optalpha, optsize, S=NULL, ...) {
+	# Computes the proper optimization index 
   pW <- propW(W, ...)
   if (optim.model == "alpha") {
     minus.log.fitness.P(P=pW$P, varP=pW$varP, alphaM=pW$alphaM, excent=pW$excent, size=pW$size, s=s, sp=sp, sa=sa, se=se, ss=ss, optP=optP, optalpha=optalpha, optsize=optsize)
@@ -249,6 +244,11 @@ minus.log.fitness.W <- function(W, s, sp, sa, se, ss, optP, optalpha, optsize, S
 }
 
 optimW <- function(optalpha, templateW, sigP0=0) {
+	# Core optimization routine. Returns the W matrix optimized for a direction optalpha.
+	# templateW is a numeric matrix of n genes x n genes, containing numbers (fixed regulatory interactions)
+	# and NAs (regulatory interactions to be optimized). 
+	# Optimized interactions cannot be < -1 and > 1. 
+	# A random deviate of std dev sigP0 is applied to the starting W matrix, which can be used to assess the uniqueness of the solution. 
   ng <- ncol(templateW)
   pp0 <- setNames(rnorm(ng*ng, mean=0, sd=sigP0), nm=outer(seq_len(ng), seq_len(ng), function(w1, w2) paste0("W", w1, w2)))
   pp0 <- pp0[is.na(templateW)]
@@ -274,6 +274,7 @@ optimW <- function(optalpha, templateW, sigP0=0) {
 }
 
 optimW.alpharange <- function(templateW, sigP0=0, n.points=101) {
+	# Calls optimW for regularly-spaced values of alpha
   alphas <- seq(-pi/2, pi/2, length.out=n.points)
   ll <- mclapply(alphas, optimW, templateW=templateW, sigP0=sigP0, mc.cores=mc.cores)
   pp <- lapply(ll, function(W) propW(W, a=default.par$a, steps=default.par$steps, measure=default.par$measure))
@@ -286,7 +287,7 @@ optimW.alpharange <- function(templateW, sigP0=0, n.points=101) {
   )
 }
 
-########Figs####################################################################
+######## Plotting functions ####################################################################
 
 .plot_oa <- function(oa) {
   layout(t(1:3))
