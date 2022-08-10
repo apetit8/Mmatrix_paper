@@ -16,7 +16,7 @@ plt <- ggbetweenstats(
   centrality.plotting=FALSE,
   plot.type = "box",
   ggtheme = ggplot2::theme_bw()+theme(plot.margin = unit(c(0.1, 0, 3, 0), "cm")),
-  ggplot.component = scale_x_discrete(labels = c('Full Network','Direct only','1 intermediate','2 intermediate','3 intermediate')),
+  ggplot.component = scale_x_discrete(labels = c('Full Network','Direct regulation\nonly','Distance: 1 node','Distance: 2 nodes','Distance: 3 nodes')),
   pairwise.comparisons=FALSE,
   bf.message=FALSE,
   results.subtitle=FALSE,
