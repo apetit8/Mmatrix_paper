@@ -19,7 +19,7 @@ plt <- ggbetweenstats(
   centrality.plotting=FALSE,
   plot.type = "box",
   ggtheme = ggplot2::theme_bw()+theme(plot.margin = unit(c(0.1, 2, 6, 0.1), "cm")),
-  ggplot.component = scale_x_discrete(labels = c('1 intermediate','2 intermediate','2 intermediate','3 intermediate','3 intermediate')),
+  ggplot.component = scale_x_discrete(labels = c('Distance: 1\n4 regulations','Distance: 2\n2 regulations','Distance: 2\n4 regulations','Distance: 3\n1 regulations','Distance: 3\n4 regulations')),
   pairwise.comparisons=FALSE,
   bf.message=FALSE,
   results.subtitle=FALSE,
@@ -39,6 +39,6 @@ grid.arrange(
   widths = c(1),
   clip = FALSE
 )
-grid.raster(png.netw1, x=0.54, y=0.18, width=0.85)
+grid.raster(png.netw1, x=0.53, y=0.22, width=0.85)
 dev.off()
 
