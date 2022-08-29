@@ -20,7 +20,7 @@ plt <- ggbetweenstats(
   pairwise.comparisons=FALSE,
   bf.message=FALSE,
   results.subtitle=FALSE,
-  xlab=" ", ylab="Mutational correlation (rM)",
+  xlab=" ", ylab="Mutational correlation r(M)",
   title = NULL
 )
 plt

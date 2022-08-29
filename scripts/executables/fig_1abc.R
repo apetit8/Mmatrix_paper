@@ -35,7 +35,7 @@ cairo_pdf("../../figures/fig1_a.pdf", width=6, height=6)
   dfm <- subset(df.m, round(ang_S, 1) == round(0.785, 1))
   dfw <- subset(df.w, round(ang_S, 1) == round(0.785, 1))
   plot(dfang1$Gen, dfang1$ang_M, ylim =c(-pi/2,pi/2), xlim = c(min(dfang1$Gen), max(dfang1$Gen)),
-       main="", yaxt="n", ylab = expression(paste("Mutational effects direction (",alpha, "M)")), xlab = "Generation", col=alpha(colors[factor(dfang1$V10)],0.2),mar=c(1, 1, 0, 1), mgp = c(1.75, 0.75, 0))
+       main="", yaxt="n", ylab = expression(paste("Mutational effects direction ",alpha, "(M)")), xlab = "Generation", col=alpha(colors[factor(dfang1$V10)],0.2),mar=c(1, 1, 0, 1), mgp = c(1.75, 0.75, 0))
   # for (i in unique(as.factor(dfang1$data.dir))) {
   #   lines(  subset(dfang1, data.dir==i)$Gen,  subset(dfang1, data.dir==i)$ang_M, col=alpha(colors[factor(subset(dfang1, data.dir==i)$V10)],0.2)  )
   # }

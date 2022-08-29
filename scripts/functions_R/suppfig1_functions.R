@@ -291,8 +291,8 @@ optimW.alpharange <- function(templateW, sigP0=0, n.points=101) {
 
 .plot_oa <- function(oa) {
   layout(t(1:2))
-  plot(oa$alphaS, oa$alphaM, xlab="alpha S", ylab="alpha M")
-  plot(oa$alphaS, oa$excent, xlab="alpha S", ylab="eccentricity", ylim=c(0,1))
+  plot(oa$alphaS, oa$alphaM, xlab=expression(paste("Fitness function direction ",alpha, "(S)")), ylab=expression(paste("Mutational effects direction ",alpha, "(M)")))
+  plot(oa$alphaS, oa$excent, xlab=expression(paste("Fitness function direction ",alpha, "(S)")), ylab=expression(paste("Mutational effects eccentricity e(M)")), ylim=c(0,1))
   # plot(oa$alphaS, oa$size, xlab="alpha S", ylab="size", ylim=c(0, max(oa$size)))
 }
 

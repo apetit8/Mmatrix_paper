@@ -23,9 +23,9 @@ pfig3 <- ggplot(data=df.fig3, aes(ang_S, ang_M))+
   geom_point(aes(y=ang_M, col=ecc_M), alpha=0.2, show.legend = FALSE)+
   geom_point(aes(y=ang_M_mpi, col=ecc_M), alpha=0.2, show.legend = FALSE)+
   geom_point(aes(y=ang_M_ppi, col=ecc_M), alpha=0.2, show.legend = TRUE)+
-  labs(y=expression(paste(alpha, "M")), x=expression(paste(alpha, "S")), fill = expression("\u03BE\u03B1"))+
+  labs(y=expression(paste(alpha, "(M)")), x=expression(paste(alpha, "(S)")), fill = expression("\u03BE\u03B1"))+
   scale_color_viridis_c(option = "plasma")+
-  labs(col = "M Eccentricity")+
+  labs(col = "e(M)")+
   scale_x_continuous(breaks=c(0, pi/4, pi/2, -pi/4, -pi/2),
                      labels=c("0", "\u03c0/4", "\u03c0/2","-\u03c0/4", "-\u03c0/2"))+
   scale_y_continuous(breaks=c(0, pi/4, pi/2, -pi/4, -pi/2),
@@ -45,7 +45,7 @@ grid.arrange(
   widths = c(1),
   clip = FALSE
 )
-grid.raster(png.netw1, x=0.46, y=0.86, width=0.68)
+grid.raster(png.netw1, x=0.49, y=0.86, width=0.68)
 dev.off()
 
 
