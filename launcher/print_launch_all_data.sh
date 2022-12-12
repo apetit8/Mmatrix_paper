@@ -1,11 +1,10 @@
 #!/bin/bash
 
 
-SIMUL_PROG="/shared/projects/transp_horizon/Software/simevolv/bin/Release/Simul_Prog"
-cd ../simul
+SIMUL_PROG="/shared/projects/evoplanet/Software/simevolv/bin/Release/Simul_Prog"
 rep=30  # Number of replicates for each network size
-templates=`find -type f -wholename "./*.par"`
-SHORT_NAME=fig_
+paramfiles=`find -type f -wholename "./*.par"`
+SHORT_NAME=All_fig
 LAUNCH_FILE=${SHORT_NAME}-launch.sh
 PARAMFILE_NAME=param.par
 
@@ -16,10 +15,10 @@ then
 fi
 
 
-for j in $templates
+for j in $paramfiles
 do
-	short=${j##*simu}
-	mydir=$j$short
+	mydir=${j%%.par*}
+
 	
 	if [ ! -d $mydir ] 
 	then
@@ -28,6 +27,7 @@ do
 	
 	# Create the right parameter file inside each directory
 	cat $j > $mydir/$PARAMFILE_NAME 
+	#rm $j
 
 	for i in `seq 1 $rep`; # For each replicate
 	do
@@ -35,5 +35,4 @@ do
 		# Writing this command in a text file
 	done 
 	
-	#~ parallel -a ./launcher.sh -j $par # Launching parallel
 done
