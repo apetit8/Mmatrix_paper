@@ -69,7 +69,11 @@ pdf("../../figures/fig_cor.pdf", width=10, height=10)
 		resfiles <- list.files(path=dpath, pattern=".txt", full.names=TRUE)
 		fitcor <- lapply(seq_along(parfiles), function(i) get.fitcor(parfiles[i]))
 		mutcor <- lapply(seq_along(parfiles), function(i) get.mutcor(resfiles[i], parfiles[i]))
-		plot(unlist(fitcor), unlist(mutcor), main=paste0("Network of size n=", net.sizes[nsi]), xlab="Fitness correlation", ylab="Mutational correlation", xlim=c(-1,1), ylim=c(-1,1)) 
+		plot(unlist(fitcor), unlist(mutcor), main=paste0("Network of size n=", net.sizes[nsi]),
+		     xlab="Fitness correlation", ylab="Mutational correlation", xlim=c(-1,1), ylim=c(-1,1)) 
 		abline(lm(unlist(mutcor) ~ unlist(fitcor)))
 	}
 dev.off()
+
+
+

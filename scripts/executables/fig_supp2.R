@@ -1,21 +1,21 @@
-source("../functions_R/All_functions.R")
+source("scripts/functions_R/All_functions.R")
 library(png)
 library(igraph)
 library(ggstatsplot)
 library(tidyverse)
 
 #####################
-sims.dirs1 <-  c("../../simul/fig_4/indirect-1","../../simul/fig_4/indirect-2","../../simul/fig_4/indirect-3")
-sims.dirs2 <-  list.dirs("../../simul/fig_supp2", recursive = FALSE)
+sims.dirs1 <-  c("simul/fig_4/indirect-1","simul/fig_4/indirect-2","simul/fig_4/indirect-3")
+sims.dirs2 <-  list.dirs("simul/fig_supp2", recursive = FALSE)
 #####################
-d1 <- df.data(sims.dirs1, pattern = "../../simul/fig_4/", variable="netw", file_size=15000, w_of_6=TRUE, network=FALSE)
-d2 <- df.data(sims.dirs2, pattern = "../../simul/fig_supp2/", variable="netw", file_size=15000, w_of_6=TRUE, network=FALSE)
+d1 <- df.data(sims.dirs1, pattern = "simul/fig_4/", variable="netw", file_size=15000, w_of_6=TRUE, network=FALSE)
+d2 <- df.data(sims.dirs2, pattern = "simul/fig_supp2/", variable="netw", file_size=15000, w_of_6=TRUE, network=FALSE)
 df.figs2 <- rbind(d1,d2)
 
 plt <- ggbetweenstats(
   data = df.figs2,
   x = pop,
-  y = corr,
+  y = corrM,
   centrality.plotting=FALSE,
   plot.type = "box",
   ggtheme = ggplot2::theme_bw()+theme(plot.margin = unit(c(0.1, 2, 6, 0.1), "cm")),
@@ -29,9 +29,9 @@ plt <- ggbetweenstats(
 plt
 
 
-png.netw1 = readPNG('../../templates/fig_supp2/networks_supp2.png')
+png.netw1 = readPNG('templates/fig_supp2/networks_supp2.png')
 
-cairo_pdf("../../figures/fig_supp2.pdf", width=8, height=7)
+cairo_pdf("figures/fig_supp2.pdf", width=8, height=7)
 grid.arrange(
   plt,
   ncol = 1,
