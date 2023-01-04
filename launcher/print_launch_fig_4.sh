@@ -3,7 +3,7 @@
 
 SIMUL_PROG="/shared/projects/evoplanet/Software/simevolv/bin/Release/Simul_Prog"
 rep=30  # Number of replicates for each network size
-paramfiles=`find -type f -wholename "./*.par"`
+paramfiles=`ls simul/fig_4/*/*.par`
 SHORT_NAME=All_fig
 LAUNCH_FILE=${SHORT_NAME}-launch.sh
 PARAMFILE_NAME=param.par
@@ -18,7 +18,6 @@ fi
 for j in $paramfiles
 do
 	mydir=${j%%.par*}
-
 	
 	if [ ! -d $mydir ] 
 	then
@@ -27,7 +26,7 @@ do
 	
 	# Create the right parameter file inside each directory
 	cat $j > $mydir/$PARAMFILE_NAME 
-	#rm $j
+	rm $j
 
 	for i in `seq 1 $rep`; # For each replicate
 	do

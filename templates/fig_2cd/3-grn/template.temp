@@ -1,5 +1,5 @@
 TYPE_ARCHI 	 m2 
-SIMUL_GENER 	 10000 
+SIMUL_GENER 	 10000
 SIMUL_OUTPUT 	 250 
 GENET_NBLOC 	 6 
 GENET_PLOIDY 	 1 
@@ -11,8 +11,7 @@ GENET_RECRATES 	 0.5
 GENET_SELFING 	 0 
 GENET_CLONAL 	 0 
 GENET_EPIGENET 	 0 
-INIT_PSIZE 	 500 
-INIT_ALLELES 	 0 1e-05 
+INIT_PSIZE 	 5000 
 INIT_CLONAL 	 clonal
 TYPE_ALLELES 	immut normal normal normal normal normal normal immut normal normal normal normal normal normal immut normal normal normal normal normal normal immut normal normal normal normal normal normal immut normal normal normal normal normal normal immut
 INIT_ALLELES_FULL       0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
