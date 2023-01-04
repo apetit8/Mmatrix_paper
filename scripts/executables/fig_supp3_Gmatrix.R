@@ -1,6 +1,6 @@
 source("scripts/functions_R/All_functions.R")
 #########################################
-sims.dirs <- list.dirs("simul/fig_1abc", recursive = FALSE)
+sims.dirs <- list.dirs("simul/fig_2ab", recursive = FALSE)
 angle = c(0.785, 0, -0.393)
 of        <- "fig1"
 modulo <- pi
@@ -16,7 +16,7 @@ df.m.s.gen <- data.frame()
 for (i in angle) {
   sims.dir  <- list.files(path=sims.dirs, pattern=paste0("simuangle", i,"$"), full.names=TRUE)
   df <- df.figsuppG(sims.dir, all.gen=TRUE)
-  pop <- str_split(df$data.dir, "simul/fig_1abc/", n=2, simplify = TRUE)
+  pop <- str_split(df$data.dir, "simul/fig_2ab/", n=2, simplify = TRUE)
   df[,10] <- sprintf("%s", pop[,2])
   model <- str_split(pop[,2], "/simuangle", n=2, simplify = TRUE)
   df[,11] <- sprintf("%s", model[,1])
@@ -32,7 +32,7 @@ colors <- c("maroon2", "darkblue", "yellowgreen")
 
 
 # png(file="figures/fig1_part1.png", width=400, height=400)
-cairo_pdf("figures/fig1_suppG_a.pdf", width=6, height=6)
+cairo_pdf("figures/fig_supp3_a.pdf", width=6, height=6)
 sims.dir  <- list.files(path=sims.dirs, pattern=paste0("simuangle", 0.785,"$"), full.names=TRUE)
 # mar=c(0,0,0,0)
 dfang1 <- subset(df.m.s.gen, round(ang_S, 1) == round(0.785, 1))
@@ -58,7 +58,7 @@ oneplot.allellipse(sims.dir, G.factor=G.factor, S.factor=S.factor, M.factor=M.fa
 dev.off()
 ########
 
-cairo_pdf("figures/fig1_suppG_c.pdf", width=6, height=6)
+cairo_pdf("figures/fig_supp3_b.pdf", width=6, height=6)
 sims.dir  <- list.files(path=sims.dirs, pattern=paste0("simuangle", -0.393,"$"), full.names=TRUE)
 dfang1 <- subset(df.m.s.gen, round(ang_S, 1) == round(-0.393, 1))
 dfm <- subset(df.m, round(ang_S, 1) == round(-0.393, 1))
@@ -80,7 +80,7 @@ dev.off()
 
 
 ################################################################################
-sims.dirs <- list.dirs("simul/fig_1de", recursive = FALSE)
+sims.dirs <- list.dirs("simul/fig_2cd", recursive = FALSE)
 
   df.G <- data.frame(NULL)
   for (i in sims.dirs) {
@@ -113,7 +113,6 @@ pfig1de <- ggplot(data=df.G, aes(ang_S, ang_G))+
   scale_y_continuous(breaks=c(0, pi/4, pi/2, -pi/4, -pi/2),
                      labels=c("0", "\u03c0/4", "\u03c0/2","-\u03c0/4", "-\u03c0/2"))
 pfig1de <- pfig1de + facet_wrap(V10 ~., labeller = as_labeller(netw_names),  ncol=3) + theme(strip.background = element_blank())+ theme_bw(base_size = 13) #, strip.text = element_blank()
-pfig1de
 
 
 netw_names <- as_labeller(c(
@@ -129,9 +128,9 @@ pp <- ggplot(df.G, aes(x = corrS, y=corrG))+
   coord_fixed(ratio = 1)+
   facet_wrap(V10 ~., labeller = as_labeller(netw_names),  ncol=3)+
   theme(plot.margin = margin(t=4,0,0,0, "lines"),legend.direction="horizontal", legend.position = c(0.5, 1.27))
-pp
 
-cairo_pdf("figures/fig1_G1_corr.pdf", width=8, height=4)
+
+cairo_pdf("figures/fig_supp3_c.pdf", width=8, height=4)
 grid.arrange(
   pfig1de,
   ncol = 1,
@@ -140,7 +139,7 @@ grid.arrange(
 )
 dev.off()
 
-cairo_pdf("figures/fig1_G2_corr.pdf", width=8, height=4)
+cairo_pdf("figures/fig_supp3_d.pdf", width=8, height=4)
 grid.arrange(
   pp,
   ncol = 1,

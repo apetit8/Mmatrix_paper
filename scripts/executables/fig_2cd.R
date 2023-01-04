@@ -32,7 +32,7 @@ pfig2cd <- ggplot(data=df.fig2cd, aes(ang_S, ang_M))+
 pfig2cd <- pfig2cd + facet_wrap(pop ~., labeller = as_labeller(netw_names),  ncol=3) + theme(strip.background = element_blank())+ theme_bw(base_size = 13) #base_size = 12
 
 
-cairo_pdf("figures/fig2_c.pdf", width=8, height=4)
+cairo_pdf("figures/fig_2c.pdf", width=8, height=4)
 grid.arrange(
   pfig2cd,
   ncol = 1,
@@ -57,7 +57,7 @@ pp <- ggplot(df.fig2cd, aes(x = corrS, y=corrM))+
   facet_wrap(pop ~., labeller = as_labeller(netw_names),  ncol=3)+
   theme(plot.margin = margin(t=4,0,0,0, "lines"),legend.direction="horizontal", legend.position = c(0.5, 1.27))
 
-cairo_pdf("figures/fig2_d.pdf", width=8, height=4)
+cairo_pdf("figures/fig_2d.pdf", width=8, height=4)
 grid.arrange(
   pp,
   ncol = 1,

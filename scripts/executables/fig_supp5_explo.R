@@ -94,7 +94,7 @@ pfig4 <- ggplot(data=subset(df.fig_explo, param=="basal"), aes(corrS, corrM))+
   theme(plot.title = ggtext::element_markdown())
 
 
-cairo_pdf("figures/fig_explo.pdf", width=9, height=12)
+cairo_pdf("figures/fig_supp5_explo.pdf", width=8.5, height=11)
 grid.arrange(
   pfig,pfig1,pfig2,pfig3,pfig4,
   ncol = 1,

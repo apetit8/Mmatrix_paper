@@ -58,7 +58,7 @@ V(G)$color <- c("lightyellow", "lightpink", "lightpink", "lightyellow", "grey", 
 deg <- degree(G, mode = "all")
 # G <- delete.edges(G, E(G)[ abs(weight) < 0.3 ])
 
-pdf("figures/fig_3graph_corr.pdf", width=6, height=7)
+pdf("figures/fig_3a.pdf", width=6, height=7)
 
 plot.igraph(G, edge.width=(abs(E(G)$weight))^2*10, edge.color=ifelse(abs(E(G)$weight) < 0.4,"grey",ifelse(E(G)$weight > 0, "dodgerblue2","brown2")),
             layout =  layout_in_circle, edge.label=round(E(G)$weight,2), edge.label.color=ifelse(abs(E(G)$weight) > 0.4,"black","white"), edge.label.cex=1.5,
@@ -123,7 +123,7 @@ V(G)$color <- c("lightyellow", "lightpink", "lightpink", "lightyellow", "grey", 
 deg <- degree(G, mode = "all")
 # G <- delete.edges(G, E(G)[ abs(weight) < 0.1 ])
 
-pdf("figures/fig_3graph_corr_ecc.pdf", width=6, height=7)
+pdf("figures/fig_3b.pdf", width=6, height=7)
 plot.igraph(G, edge.width=(abs(E(G)$weight))^2*10, edge.color=ifelse(abs(E(G)$weight) < 0.1,"grey",ifelse(E(G)$weight > 0, "dodgerblue2","brown2")),
             layout =  layout_in_circle, edge.label=round(E(G)$weight,2), edge.label.color=ifelse(abs(E(G)$weight) > 0.1,"black","white"), edge.label.cex=1.5,
             vertex.label = c("d","b","a","c","e","f"), vertex.label.cex=2,
@@ -188,7 +188,7 @@ V(G)$color <- c("lightyellow", "lightpink", "lightpink", "lightyellow", "grey", 
 deg <- degree(G, mode = "all")
 # G <- delete.edges(G, E(G)[ abs(weight) < 0.1 ])
 
-pdf("figures/fig_3graph_corr_corrS.pdf", width=6, height=7)
+pdf("figures/fig_3c.pdf", width=6, height=7)
 plot.igraph(G, edge.width=(abs(E(G)$weight))^2*10, edge.color=ifelse(abs(E(G)$weight) < 0.4,"grey",ifelse(E(G)$weight > 0, "dodgerblue2","brown2")),
             layout =  layout_in_circle, edge.label=round(E(G)$weight,2), edge.label.color=ifelse(abs(E(G)$weight) > 0.4,"black","white"), edge.label.cex=1.5,
             vertex.label = c("d","b","a","c","e","f"), vertex.label.cex=2,

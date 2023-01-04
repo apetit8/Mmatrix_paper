@@ -29,7 +29,7 @@ colors <- c("maroon2", "darkblue", "yellowgreen")
 
 
 # png(file="figures/fig1_part1.png", width=400, height=400)
-cairo_pdf("figures/fig2_a.pdf", width=6, height=6)
+cairo_pdf("figures/fig_2a.pdf", width=6, height=6)
   sims.dir  <- list.files(path=sims.dirs, pattern=paste0("simuangle", 0.785,"$"), full.names=TRUE)
   mar=c(0,0,0,0)
   dfang1 <- subset(df.m.s.gen, round(ang_S, 1) == round(0.785, 1))
@@ -57,7 +57,7 @@ dev.off()
 ########
 
 # png(file="figures/fig1_part3.png", width=400, height=400)
-cairo_pdf("figures/fig2_b.pdf", width=6, height=6)
+cairo_pdf("figures/fig_2b.pdf", width=6, height=6)
   sims.dir  <- list.files(path=sims.dirs, pattern=paste0("simuangle", -0.393,"$"), full.names=TRUE)
   dfang1 <- subset(df.m.s.gen, round(ang_S, 1) == round(-0.393, 1))
   dfm <- subset(df.m, round(ang_S, 1) == round(-0.393, 1))
