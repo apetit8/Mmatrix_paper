@@ -5,11 +5,11 @@ library(ggstatsplot)
 library(tidyverse)
 
 #####################
-sims.dirs1 <-  c("simul/fig_4/indirect-1","simul/fig_4/indirect-2","simul/fig_4/indirect-3")
+sims.dirs1 <-  c("simul/fig_5/indirect-1","simul/fig_5/indirect-2","simul/fig_5/indirect-3")
 sims.dirs2 <-  list.dirs("simul/fig_supp2", recursive = FALSE)
 #####################
-d1 <- df.data(sims.dirs1, pattern = "simul/fig_4/", variable="netw", file_size=15000, w_of_6=TRUE, network=FALSE)
-d2 <- df.data(sims.dirs2, pattern = "simul/fig_supp2/", variable="netw", file_size=15000, w_of_6=TRUE, network=FALSE)
+d1 <- df.data(sims.dirs1, pattern = "simul/fig_5/", variable="netw", file_size=15000, w_of_6=TRUE, network=FALSE)
+d2 <- df.data(sims.dirs2, pattern = "simul/fig_supp4/", variable="netw", file_size=15000, w_of_6=TRUE, network=FALSE)
 df.figs2 <- rbind(d1,d2)
 
 plt <- ggbetweenstats(
@@ -25,13 +25,12 @@ plt <- ggbetweenstats(
   results.subtitle=FALSE,
   xlab=" ", ylab="Mutational correlation r(M)",
   title = NULL
-)
-plt
+)+  ggplot2::scale_color_manual(values = c("steelblue3","palevioletred","palevioletred","chartreuse3","chartreuse3"))
 
 
-png.netw1 = readPNG('templates/fig_supp2/networks_supp2.png')
+png.netw1 = readPNG('templates/fig_supp4/networks_supp4.png')
 
-cairo_pdf("figures/fig_supp2.pdf", width=8, height=7)
+cairo_pdf("figures/fig_supp4.pdf", width=8, height=7)
 grid.arrange(
   plt,
   ncol = 1,

@@ -4,11 +4,11 @@ source("./scripts/functions_R/All_functions.R")
 
 template    <- "./templates/fig_cor/template.par"
 simu.path   <- "./simul/fig_cor"
-launch.path <- "./fullcor-launch.sh"
+launch.path <- "./launcher/fullcor-launch.sh"
 simul.prog  <- file.path(Sys.getenv("HOME"), "Work/Software/simevolv/bin/Release/Simul_Prog")
 
 reps    <- 100
-netsize <- c(2,3,5,10)
+netsize <- c(2,5,10,50)
 part.sel<- 1.
 
 ################# Creating simulation and parameters files #############
@@ -41,10 +41,10 @@ for (ns in netsize) {
 	}
 }
 
-################ Creating the launch file ##############################
-
-launch <- sapply(par2launch, function(pp) {
-		paste(simul.prog, "-p", paste0(pp, ".par"), "-o", paste0(pp, ".txt"))
-	})
-	
-cat(launch, file=launch.path, sep="\n")
+# ################ Creating the launch file ##############################
+# 
+# launch <- sapply(par2launch, function(pp) {
+# 		paste(simul.prog, "-p", paste0(pp, ".par"), "-o", paste0(pp, ".txt"))
+# 	})
+# 	
+# cat(launch, file=launch.path, sep="\n")

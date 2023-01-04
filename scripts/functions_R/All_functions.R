@@ -82,8 +82,10 @@ generate.param.list <- function(template, param.list, reps=1, launchfile=NA, sep
 }
 
 #Function to print parameter files of the wanted S matrix
-param.from.sel.features <- function(param.template, param.out="param.par", cor=NA, angle=NA, size=NA, eccentricity=NA, reps=40, sel.genes=c(3:(2+(n.genes-2)/2)) ) {
+param.from.sel.features <- function(param.template, param.out="param.par", cor=NA,
+        angle=NA, size=NA, eccentricity=NA, reps=40, sel.genes=c(3:(2+(n.genes-2)/2)), initW=NULL ) {
   pp <- read.param(param.template)
+  if(!is.null(initW)){pp$INIT_ALLELES_FULL <- initW}
   S.mat <- matrix2.from.features(cor=cor, angle=angle, size=size, eccentricity=eccentricity)
   n.genes <- if ("GENET_NBPHEN" %in% names(pp)) pp$GENET_NBPHEN else pp$GENET_NBLOC
   pS <- param.S.matrix(S.mat, n.genes=n.genes, sel.genes=sel.genes )
@@ -669,7 +671,7 @@ df.figsuppG <- function(sims.dir, modulo=pi, all.gen=FALSE){
 }
 
 
-df.topo.wide.m<- function(sims.dir, w_of_4=FALSE, w_of_6=FALSE, network=FALSE, file_size=100000){
+df.topo.wide.m<- function(sims.dir, w_of_6=FALSE, network=FALSE, file_size=100000, all.gen=FALSE){
   simul.df <- data.frame()
   #collect all the data
   for (i in sims.dir) {
@@ -677,7 +679,6 @@ df.topo.wide.m<- function(sims.dir, w_of_4=FALSE, w_of_6=FALSE, network=FALSE, f
     files     <- list.files(path = i, full.names=TRUE, pattern = "^simul")
     files <- files[sapply(files, file.size) > file_size]
     param.file = list.files(path=i, pattern="param.par", full.names=TRUE)
-    # stopifnot(length(files) >0, length(param.file) == 1)
     #read param.par to associate each simu with the S "what"
     rp <- read.param(param.file)
     mut.rate <- 2*rp$GENET_MUTRATES
@@ -688,50 +689,56 @@ df.topo.wide.m<- function(sims.dir, w_of_4=FALSE, w_of_6=FALSE, network=FALSE, f
     mytopos <- lapply(files, function(ff) {
       print(ff)
       tt <- fread(ff, data.table=FALSE) #read.table(ff, header=TRUE)
-      #M data
-      gen <-tt[nrow(tt),"Gen"]
-      M.mat <- extract.M.matrix(tt, gen=gen)
-      M.ang_ppi <- matrix.features(M.mat,n.genes=2)[["angle"]][1]+pi #M matrix
-      M.ang_mpi <- matrix.features(M.mat,n.genes=2)[["angle"]][1]-pi #M matrix
-      M.feat1 <- matrix.features(M.mat,n.genes=2)[["eccentricity"]][1] #M matrix
-      M.ang <- matrix.features(M.mat,n.genes=2)[["angle"]][1] #M matrix
-      M.feat3 <- matrix.features(M.mat,n.genes=2)[["size"]][1] #M matrix
-      fitness <- extract.fitness(tt, "MFit", gen=gen)
-      # opt1 <- extract.fitness(tt, "FitOpt1", gen=gen)[1]
-      corrM <- extract.correlation(tt, gen=gen)
-      opt2 <- extract.fitness(tt, "FitOpt2", gen=gen)[1]
-      if (network==TRUE){
-        Wmat <- extract.W.matrix(tt) #W data
-        new <- c(ff, M.ang_ppi, S.ref2, M.ang_mpi, M.feat1, M.ang, M.feat3, fitness, corrM, corrS, Wmat )
+      mygens <-rev(if (all.gen==TRUE) tt[,"Gen"] else tt[nrow(tt),"Gen"])
+      df <- data.frame()
+      for (genid in mygens) {
+        #M data
+        gen <- genid
+        M.mat <- extract.M.matrix(tt, gen=genid)
+        M.ang_ppi <- matrix.features(M.mat,n.genes=2)[["angle"]][1]+pi #M matrix
+        M.ang_mpi <- matrix.features(M.mat,n.genes=2)[["angle"]][1]-pi #M matrix
+        M.feat1 <- matrix.features(M.mat,n.genes=2)[["eccentricity"]][1] #M matrix
+        M.ang <- matrix.features(M.mat,n.genes=2)[["angle"]][1] #M matrix
+        M.feat3 <- matrix.features(M.mat,n.genes=2)[["size"]][1] #M matrix
+        fitness <- extract.fitness(tt, "MFit", gen=genid)
+        # opt1 <- extract.fitness(tt, "FitOpt1", gen=gen)[1]
+        corrM <- extract.correlation(tt, gen=genid)
+        opt2 <- extract.fitness(tt, "FitOpt2", gen=genid)[1]
+        if (network==TRUE){
+          Wmat <- extract.W.matrix(tt) #W data
+          new <- c(ff, gen, M.ang_ppi, S.ref2, M.ang_mpi, M.feat1, M.ang, M.feat3, fitness, corrM, corrS, Wmat )
+        }
+        if (network!=TRUE){
+          new <- c(ff, gen, M.ang_ppi, S.ref2, M.ang_mpi, M.feat1, M.ang, M.feat3, fitness, corrM, corrS )
+        }
+        df <- rbind(df, new)
       }
       if (network!=TRUE){
-        new <- c(ff, M.ang_ppi, S.ref2, M.ang_mpi, M.feat1, M.ang, M.feat3, fitness, corrM, corrS )
+        df <- setnames(df[,1:11], c("data.dir","Gen","ang_M_ppi","ang_S","ang_M_mpi","ecc_M","ang_M","siz_M","fitness","corrM","corrS"))
+        df[,2:11] <- lapply( df[,2:11], as.numeric)
       }
-      return(new)
+      if (w_of_6==TRUE & network==TRUE) {
+        df <- setnames(df[,1:47], c("data.dir","Gen","ang_M_ppi","ang_S","ang_M_mpi","ecc_M","ang_M","siz_M","fitness","corrM","corrS",
+                                                "a_a","b_a","c_a","d_a","e_a","f_a","a_b","b_b","c_b","d_b","e_b","f_b","a_c","b_c","c_c","d_c","e_c","f_c",
+                                                "a_d","b_d","c_d","d_d","e_d","f_d","a_e","b_e","c_e","d_e","e_e","f_e","a_f","b_f","c_f","d_f","e_f","f_f"))
+        df[,2:47] <- lapply( df[,2:47], as.numeric)
+      }
+       return(df)
       #create a list of data
     })
     newt <- ldply(mytopos) # create a data.frame for i
     simul.df <- rbind(simul.df, newt) #paste the data of i in a data.frame with the others
   }
   
-  if (network!=TRUE){
-    simul.df <- setnames(simul.df[,1:10], c("data.dir","ang_M_ppi","ang_S","ang_M_mpi","ecc_M","ang_M","siz_M","fitness","corrM","corrS"))
-    simul.df[,2:10] <- lapply( simul.df[,2:10], as.numeric)
-  }
-  if (w_of_6==TRUE & network==TRUE) {
-    simul.df <- setnames(simul.df[,1:46], c("data.dir","ang_M_ppi","ang_S","ang_M_mpi","ecc_M","ang_M","siz_M","fitness","corrM","corrS",
-                               "a_a","b_a","c_a","d_a","e_a","f_a","a_b","b_b","c_b","d_b","e_b","f_b","a_c","b_c","c_c","d_c","e_c","f_c",
-                               "a_d","b_d","c_d","d_d","e_d","f_d","a_e","b_e","c_e","d_e","e_e","f_e","a_f","b_f","c_f","d_f","e_f","f_f"))
-    simul.df[,2:46] <- lapply( simul.df[,2:46], as.numeric)
-  }
+
   return(simul.df)
 }
 
-df.data <- function(sims.dirs, modulo=pi, pattern="simul/", variable="population", network=FALSE, w_of_6=FALSE, file_size=100000){
+df.data <- function(sims.dirs, modulo=pi, pattern="simul/", variable="population", network=FALSE, w_of_6=FALSE, file_size=100000, all.gen=FALSE){
   df.datas <- data.frame(NULL)
   for (i in sims.dirs) {
     sims.dir <- list.dirs(i)[2:length(list.dirs(i))]
-    df <- df.topo.wide.m(sims.dir, network=network, w_of_6=w_of_6, file_size=file_size)
+    df <- df.topo.wide.m(sims.dir, network=network, w_of_6=w_of_6, file_size=file_size, all.gen=all.gen)
     pop <- str_split(i, pattern, n=2, simplify = TRUE)
     df$pop <- sprintf("%s", pop[,2])
     df.datas <- rbind(df.datas, df)

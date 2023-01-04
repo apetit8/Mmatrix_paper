@@ -1,9 +1,7 @@
 source("scripts/functions_R/All_functions.R")
 #########################################
-sims.dirs <- list.dirs("simul/fig_1abc", recursive = FALSE)
+sims.dirs <- list.dirs("simul/fig_2ab", recursive = FALSE)
 angle = c(0.785, 0, -0.393)
-of        <- "fig1"
-modulo <- pi
 #####################
 
 M.factor <- 350
@@ -31,7 +29,7 @@ colors <- c("maroon2", "darkblue", "yellowgreen")
 
 
 # png(file="figures/fig1_part1.png", width=400, height=400)
-cairo_pdf("figures/fig1_a.pdf", width=6, height=6)
+cairo_pdf("figures/fig2_a.pdf", width=6, height=6)
   sims.dir  <- list.files(path=sims.dirs, pattern=paste0("simuangle", 0.785,"$"), full.names=TRUE)
   mar=c(0,0,0,0)
   dfang1 <- subset(df.m.s.gen, round(ang_S, 1) == round(0.785, 1))
@@ -58,31 +56,8 @@ cairo_pdf("figures/fig1_a.pdf", width=6, height=6)
 dev.off()
 ########
 
-# png(file="figures/fig1_part2.png", width=400, height=400) 
-cairo_pdf("figures/fig1_b.pdf", width=6, height=6)
-  sims.dir  <- list.files(path=sims.dirs, pattern=paste0("simuangle", 0,"$"), full.names=TRUE)
-  dfang1 <- subset(df.m.s.gen, round(ang_S, 1) == round(0, 1))
-  dfm <- subset(df.m, round(ang_S, 1) == round(0, 1))
-  dfw <- subset(df.w, round(ang_S, 1) == round(0, 1))
-  plot(dfang1$Gen, dfang1$ang_M, ylim =c(-pi/2,pi/2), xlim = c(min(dfang1$Gen), max(dfang1$Gen)),
-       main="", yaxt="n", ylab = expression(paste("Mutational effects direction ",alpha, "(M)")), xlab = "Generation", col=alpha(colors[factor(dfang1$V10)],0.2),
-       mgp = c(1.75, 0.75, 0),cex.lab=1.5, cex.axis=1.5)
-  df500 <- subset(dfang1, Gen >= 500)
-  bymodel <- by(df500$ang_M, list(df500$Gen, df500$V10), FUN=mean.angle.pi)
-  lines(as.numeric(rownames(bymodel)), bymodel[,"m"], col="darkblue", lwd = 3)
-  lines(as.numeric(rownames(bymodel)), bymodel[,"fkl"], col="maroon2", lwd = 3)
-  lines(as.numeric(rownames(bymodel)), bymodel[,"w"], col="yellowgreen", lwd = 3)
-  lines(dfang1$Gen, dfang1$ang_S, col="orange", type = "l", lty=3, lwd = 2) #S orientation
-  axis(side=2, at=c(-pi, -pi/2, -pi/4, 0 , pi/4, pi/2, pi), labels=expression(-pi, -pi/2, -pi/4, 0, pi/4, pi/2, pi), mgp = c(1.75, 0.75, 0), cex.axis=1.5)
-
-  oneplot.allellipse(sims.dir, G.factor=G.factor, S.factor=S.factor, M.factor=M.factor, another_plot=TRUE,
-                     xlim=c(-7,7), ylim=c(-7,7), all.reps=FALSE, xlab="", ylab="",xcoord=c(0, 10000),ycoord=c(-2.5, 0),
-                     yaxt = "n", xaxt = "n", legend=FALSE, asp=1, axes = FALSE, mgp = c(0, 0, 0))
-dev.off()
-#######
-
 # png(file="figures/fig1_part3.png", width=400, height=400)
-cairo_pdf("figures/fig1_c.pdf", width=6, height=6)
+cairo_pdf("figures/fig2_b.pdf", width=6, height=6)
   sims.dir  <- list.files(path=sims.dirs, pattern=paste0("simuangle", -0.393,"$"), full.names=TRUE)
   dfang1 <- subset(df.m.s.gen, round(ang_S, 1) == round(-0.393, 1))
   dfm <- subset(df.m, round(ang_S, 1) == round(-0.393, 1))

@@ -1,10 +1,10 @@
-source("../functions_R/All_functions.R")
+source("scripts/functions_R/All_functions.R")
+#######################
+sim.dir      <- "simul/fig_6cor"
+#######################
 
-sim.dir      <- "../../simul/fig_cor"
 net.size.dir <- list.dirs(sim.dir, full.names=FALSE, recursive=FALSE)
-
 net.sizes <- as.numeric(gsub("net-n", "", net.size.dir))
-
 net.size.dir <- net.size.dir[order(net.sizes)]
 net.sizes    <- net.sizes[order(net.sizes)]
 
@@ -60,13 +60,13 @@ analyze.M <- function(resfile, genes=1:2, extract.FUN=extract.M.matrix) {
 	}
 }
 
-pdf("../../figures/fig_cor.pdf", width=10, height=10)
+pdf("figures/fig_6cor.pdf", width=7, height=7)
 	layout(matrix(1:length(net.sizes), byrow=TRUE, ncol=2))
 	for (nsi in seq_along(net.sizes)) {
 		dpath <- file.path(sim.dir, net.size.dir[nsi])
 	
-		parfiles <- list.files(path=dpath, pattern=".par", full.names=TRUE)
-		resfiles <- list.files(path=dpath, pattern=".txt", full.names=TRUE)
+		parfiles <- list.files(path=dpath, pattern=".par", full.names=TRUE, recursive = TRUE)
+		resfiles <- list.files(path=dpath, pattern=".txt", full.names=TRUE, recursive = TRUE)
 		fitcor <- lapply(seq_along(parfiles), function(i) get.fitcor(parfiles[i]))
 		mutcor <- lapply(seq_along(parfiles), function(i) get.mutcor(resfiles[i], parfiles[i]))
 		plot(unlist(fitcor), unlist(mutcor), main=paste0("Network of size n=", net.sizes[nsi]),
@@ -74,6 +74,3 @@ pdf("../../figures/fig_cor.pdf", width=10, height=10)
 		abline(lm(unlist(mutcor) ~ unlist(fitcor)))
 	}
 dev.off()
-
-
-

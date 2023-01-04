@@ -1,12 +1,11 @@
 source("scripts/functions_R/All_functions.R")
 library(png)
 #####################
-sims.dirs <- list.dirs("simul/fig_1de", recursive = FALSE)
-modulo <- pi
+sims.dirs <- list.dirs("simul/fig_2cd", recursive = FALSE)
 #####################
 
 #Data
-df.fig1de <- df.data(sims.dirs, pattern = "simul/fig_1de/", variable="netw", file_size=15000, w_of_6=TRUE, network=FALSE)
+df.fig2cd <- df.data(sims.dirs, pattern = "simul/fig_2cd/", variable="netw", file_size=15000, w_of_6=TRUE, network=FALSE)
 
 netw_names <- as_labeller(c(
   `3-grn` = "GRN model",
@@ -15,7 +14,7 @@ netw_names <- as_labeller(c(
 ))
 
 #With eccentricity
-pfig1de <- ggplot(data=df.fig1de, aes(ang_S, ang_M))+
+pfig2cd <- ggplot(data=df.fig2cd, aes(ang_S, ang_M))+
   coord_fixed(ratio = 1, xlim = c(-1.5,1.5), ylim = c(-pi/2-0.2,pi/2+0.2), expand = TRUE, clip = "on")+
   geom_abline(colour="#666666")+
   geom_abline(intercept=pi, colour="#666666")+
@@ -30,12 +29,12 @@ pfig1de <- ggplot(data=df.fig1de, aes(ang_S, ang_M))+
                      labels=c("0", "\u03c0/4", "\u03c0/2","-\u03c0/4", "-\u03c0/2"))+
   scale_y_continuous(breaks=c(0, pi/4, pi/2, -pi/4, -pi/2),
                      labels=c("0", "\u03c0/4", "\u03c0/2","-\u03c0/4", "-\u03c0/2"))
-pfig1de <- pfig1de + facet_wrap(pop ~., labeller = as_labeller(netw_names),  ncol=3) + theme(strip.background = element_blank())+ theme_bw(base_size = 13) #base_size = 12
-pfig1de
+pfig2cd <- pfig2cd + facet_wrap(pop ~., labeller = as_labeller(netw_names),  ncol=3) + theme(strip.background = element_blank())+ theme_bw(base_size = 13) #base_size = 12
 
-cairo_pdf("figures/fig1_de.pdf", width=8, height=4)
+
+cairo_pdf("figures/fig2_c.pdf", width=8, height=4)
 grid.arrange(
-  pfig1de,
+  pfig2cd,
   ncol = 1,
   nrow = 1,
   widths = c(1),
@@ -45,12 +44,12 @@ dev.off()
 
 
 netw_names <- as_labeller(c(
-  `3-grn` = paste0("GRN model, coef = ", round(coef(lm(subset(df.fig1de, pop=="3-grn")$corrM~ subset(df.fig1de, pop=="3-grn")$corrS))[2] ,3)),
-  `2-fkl` = paste0("FKL model, coef = ", round(coef(lm(subset(df.fig1de, pop=="2-fkl")$corrM~ subset(df.fig1de, pop=="2-fkl")$corrS))[2] ,3)),
-  `1-mult` = paste0("Multilinear model, coef = ", round(coef(lm(subset(df.fig1de, pop=="1-mult")$corrM~ subset(df.fig1de, pop=="1-mult")$corrS))[2] ,3))
+  `3-grn` = paste0("GRN model, \u03B2 = ", round(coef(lm(subset(df.fig2cd, pop=="3-grn")$corrM~ subset(df.fig2cd, pop=="3-grn")$corrS))[2] ,3)),
+  `2-fkl` = paste0("FKL model, \u03B2 = ", round(coef(lm(subset(df.fig2cd, pop=="2-fkl")$corrM~ subset(df.fig2cd, pop=="2-fkl")$corrS))[2] ,3)),
+  `1-mult` = paste0("Multilinear model, \u03B2 = ", round(coef(lm(subset(df.fig2cd, pop=="1-mult")$corrM~ subset(df.fig2cd, pop=="1-mult")$corrS))[2] ,3))
 ))
 
-pp <- ggplot(df.fig1de, aes(x = corrS, y=corrM))+
+pp <- ggplot(df.fig2cd, aes(x = corrS, y=corrM))+
   geom_point(aes(col=ecc_M), alpha=0.2)+theme(strip.background = element_blank())+theme_bw(base_size = 13)+
   scale_color_viridis_c(option = "plasma")+
   labs(y=expression(paste("Mutational effect correlation r(M)")), x=expression(paste("Fitness function correlation, r(S)")), col = "M Eccentricity\ne(M)")+
@@ -58,7 +57,7 @@ pp <- ggplot(df.fig1de, aes(x = corrS, y=corrM))+
   facet_wrap(pop ~., labeller = as_labeller(netw_names),  ncol=3)+
   theme(plot.margin = margin(t=4,0,0,0, "lines"),legend.direction="horizontal", legend.position = c(0.5, 1.27))
 
-cairo_pdf("figures/fig1_de_corr.pdf", width=8, height=4)
+cairo_pdf("figures/fig2_d.pdf", width=8, height=4)
 grid.arrange(
   pp,
   ncol = 1,
@@ -67,17 +66,6 @@ grid.arrange(
   clip = FALSE
 )
 dev.off()
-
-
-#R2 :
-cor(subset(df.fig1de, pop=="1-mult")$corrM, subset(df.fig1de, pop=="1-mult")$corrS)^2
-
-cor(subset(df.fig1de, pop=="3-grn")$corrM, subset(df.fig1de, pop=="3-grn")$corrS)^2
-
-cor(df.fig3$corrM, df.fig3$corrS)^2
-
-ggplot(df.fig3, aes(x = corrS, y=corrM, col=pop))+
-  geom_point()+ theme_bw()+ facet_wrap(pop ~., labeller = as_labeller(netw_names),  ncol=3)
 
 
 
