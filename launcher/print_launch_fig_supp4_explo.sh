@@ -4,7 +4,7 @@
 SIMUL_PROG="/shared/projects/evoplanet/Software/simevolv/bin/Release/Simul_Prog"
 rep=30  # Number of replicates for each network size
 templates=`ls simul/fig_supp4/*/*.par`
-SHORT_NAME=fig_1abc
+SHORT_NAME=fig_supp4
 LAUNCH_FILE=${SHORT_NAME}-launch.sh
 PARAMFILE_NAME=param.par
 
