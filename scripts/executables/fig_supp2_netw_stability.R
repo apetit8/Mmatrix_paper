@@ -22,9 +22,10 @@ for (i in 1:nrow(df.stab)) {
 hist(df.stability$n.step, breaks=6)
 
 
-cairo_pdf("figures/fig_supp2_stability.pdf", width=4, height=5)
+cairo_pdf("figures/fig_supp2_stability.pdf", width=4, height=4)
 hist(df.stability$n.step, main = NULL, freq = FALSE, breaks =seq(1, 24, 1),
      xlab = "Timesteps before gene expression stability", ylab = "Frequency", xlim = c(3,24))
+polygon(x=c(24,24,21,21),y=c(0.003,0.008,0.008,0.003),col=2, border=NA)
 
 dev.off()
 
