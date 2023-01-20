@@ -1,3 +1,5 @@
+source("scripts/functions_R/All_functions.R")
+library(ellipse)
 #Schematic plots to explain the relationship between e(M), alpha(M), and corr(M)
 
 matrix2.optim <- function(target) {
@@ -39,18 +41,47 @@ col.e <- hcl.colors(1024, "Heat2", rev=TRUE)
 # contour(aa, rr, e.Far, add=TRUE)
 # dev.off()
 
+
 plot.new()
-pdf("figures/fig_1a_curvecor.pdf", width=5, height=5)
-plot(NULL, xlim=range(aa), ylim=c(-1,1), xlab=expression(alpha(M)), ylab="Correlation r(M)", xaxt="n", cex.axis=1.2, cex.lab=1.2)
+pdf("figures/fig_1a.pdf", width=4, height=4.5)
+layout(matrix(c(1,1,1,1,1,2,3,4,5,6), 2, 5, byrow = TRUE), heights=c(4/5,1/5))
+par(mar=c(3,3.5,2,3.2))
+plot(NULL, xlim=range(aa), ylim=c(-1,1), xlab=expression(alpha(M)), ylab="Correlation r(M)", xaxt="n", cex.axis=1.2, cex.lab=1.2, mgp=c(1.9, 0.75, 0))
 e.test <- c(0.2, 0.7, 0.85, 0.95)
 for (ie in seq_along(e.test)) {
   lines(aa, sapply(aa, function(a) matrix.features(matrix2.from.features(angle=a, eccentricity=e.test[ie], size=1))$cor), col=ie)
 }
 axis(side=1, at=c(-pi, -pi/2, -pi/4, 0 , pi/4, pi/2, pi), labels=expression(-pi, -pi/2, -pi/4, 0, pi/4, pi/2, pi), mgp = c(1.75, 0.75, 0), cex.axis=1.2)
-legend("bottomright", lty=1, col=seq_along(e.test), legend=paste("e = ", e.test))
+legend("bottomright", lty=1, col=seq_along(e.test), legend=paste("e = ", e.test), cex=1.2)
+
+par(mar=c(0,0,0,0))
+plot(NULL, xlim=c(-1,1), ylim=c(-1,1), xlab="", ylab="", asp=1, axes = FALSE, mgp = c(0, 0, 0))
+# title(expression(0), line = -2)
+lines(ellipse::ellipse(matrix2.from.features(angle=-pi/2, size=1, eccentricity=0.2),t=1), col=1)
+lines(ellipse::ellipse(matrix2.from.features(angle=-pi/2, size=1, eccentricity=0.95),t=1), col=4)
+
+plot(NULL, xlim=c(-1,1), ylim=c(-1,1), xlab="", ylab="", asp=1, axes = FALSE, mgp = c(0, 0, 0))
+# title(expression(-pi/4), line = -2)
+lines(ellipse::ellipse(matrix2.from.features(angle=-pi/4, size=1, eccentricity=0.2),t=1), col=1)
+# lines(ellipse::ellipse(matrix2.from.features(angle=-pi/4, size=1, eccentricity=0.7),t=1), col=2)
+# lines(ellipse::ellipse(matrix2.from.features(angle=-pi/4, size=1, eccentricity=0.85),t=1), col=3)
+lines(ellipse::ellipse(matrix2.from.features(angle=-pi/4, size=1, eccentricity=0.95),t=1), col=4)
+
+plot(NULL, xlim=c(-1,1), ylim=c(-1,1), xlab="", ylab="", asp=1, axes = FALSE, mgp = c(0, 0, 0))
+# title(expression(0), line = -2)
+lines(ellipse::ellipse(matrix2.from.features(angle=0, size=1, eccentricity=0.2),t=1), col=1)
+lines(ellipse::ellipse(matrix2.from.features(angle=0, size=1, eccentricity=0.95),t=1), col=4)
+
+plot(NULL, xlim=c(-1,1), ylim=c(-1,1), xlab="", ylab="", asp=1, axes = FALSE, mgp = c(0, 0, 0))
+# title(expression(0), line = -2)
+lines(ellipse::ellipse(matrix2.from.features(angle=pi/4, size=1, eccentricity=0.2),t=1), col=1)
+lines(ellipse::ellipse(matrix2.from.features(angle=pi/4, size=1, eccentricity=0.95),t=1), col=4)
+
+plot(NULL, xlim=c(-1,1), ylim=c(-1,1), xlab="", ylab="", asp=1, axes = FALSE, mgp = c(0, 0, 0))
+# title(expression(pi/2), line = -2)
+lines(ellipse::ellipse(matrix2.from.features(angle=pi/2, size=1, eccentricity=0.2),t=1), col=1)
+lines(ellipse::ellipse(matrix2.from.features(angle=pi/2, size=1, eccentricity=0.95),t=1), col=4)
 dev.off()
-
-
 
 # #
 # 

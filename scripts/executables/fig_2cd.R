@@ -9,7 +9,7 @@ df.fig2cd <- df.data(sims.dirs, pattern = "simul/fig_2cd/", variable="netw", fil
 
 netw_names <- as_labeller(c(
   `3-grn` = "GRN model",
-  `2-fkl` = "FKL model",
+  `2-fkl` = "GP model",
   `1-mult` = "Multilinear Model"
 ))
 
@@ -45,7 +45,7 @@ dev.off()
 
 netw_names <- as_labeller(c(
   `3-grn` = paste0("GRN model, \u03B2 = ", round(coef(lm(subset(df.fig2cd, pop=="3-grn")$corrM~ subset(df.fig2cd, pop=="3-grn")$corrS))[2] ,3)),
-  `2-fkl` = paste0("FKL model, \u03B2 = ", round(coef(lm(subset(df.fig2cd, pop=="2-fkl")$corrM~ subset(df.fig2cd, pop=="2-fkl")$corrS))[2] ,3)),
+  `2-fkl` = paste0("GP model, \u03B2 = ", round(coef(lm(subset(df.fig2cd, pop=="2-fkl")$corrM~ subset(df.fig2cd, pop=="2-fkl")$corrS))[2] ,3)),
   `1-mult` = paste0("Multilinear model, \u03B2 = ", round(coef(lm(subset(df.fig2cd, pop=="1-mult")$corrM~ subset(df.fig2cd, pop=="1-mult")$corrS))[2] ,3))
 ))
 

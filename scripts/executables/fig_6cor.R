@@ -70,7 +70,7 @@ pdf("figures/fig_6cor.pdf", width=7, height=7)
 		fitcor <- lapply(seq_along(parfiles), function(i) get.fitcor(parfiles[i]))
 		mutcor <- lapply(seq_along(parfiles), function(i) get.mutcor(resfiles[i], parfiles[i]))
 		plot(unlist(fitcor), unlist(mutcor), main=paste0("Network of size n=", net.sizes[nsi]),
-		     xlab="Fitness correlation", ylab="Mutational correlation", xlim=c(-1,1), ylim=c(-1,1)) 
+		     xlab="Fitness correlation r(S)", ylab="Mutational correlation r(M)", xlim=c(-1,1), ylim=c(-1,1), col = rgb(red = 0, green = 0, blue = 0, alpha = 0.2)) 
 		abline(lm(unlist(mutcor) ~ unlist(fitcor)))
 	}
 dev.off()
