@@ -46,7 +46,7 @@ cairo_pdf("figures/fig_2a.pdf", width=6, height=6)
   lines(as.numeric(rownames(bymodel)), bymodel[,"w"], col="yellowgreen", lwd = 3)
   lines(dfang1$Gen, dfang1$ang_S, col="orange", type = "l", lty=3, lwd = 2) #S orientation
   axis(side=2, at=c(-pi, -pi/2, -pi/4, 0 , pi/4, pi/2, pi), labels=expression(-pi, -pi/2, -pi/4, 0, pi/4, pi/2, pi), mgp = c(1.75, 0.75, 0), cex.axis=1.5)
-  legend("bottomleft", lty=1, box.lty=0,  bg="transparent", col=c("yellowgreen","darkblue","darkred","orange"),
+  legend("bottomleft", lty=1, box.lty=0,  bg="transparent", col=c("yellowgreen","darkblue","maroon2","orange"),
          legend=c(paste0("M GRN"), paste0("M multilinear"), paste0("M GP"),paste0("S")))
   
   

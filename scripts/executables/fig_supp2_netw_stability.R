@@ -1,7 +1,7 @@
 #Fig supp
 source("scripts/functions_R/All_functions.R")
 #####################
-sims.dirs <- c(list.dirs("simul/fig_4", recursive = FALSE), "simul/fig_2cd/3-grn", list.dirs("simul/fig_5", recursive = FALSE))
+sims.dirs <- c(list.dirs("simul/fig_4", recursive = FALSE), "simul/fig_2cd/0-grn", list.dirs("simul/fig_5", recursive = FALSE))
 #####################
 
 df.stab <- df.data(sims.dirs, pattern = "simul/fig_4/", variable="netw", file_size=15000, w_of_6=TRUE, network=TRUE)

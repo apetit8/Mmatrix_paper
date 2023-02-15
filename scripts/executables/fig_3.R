@@ -1,7 +1,7 @@
 source("scripts/functions_R/All_functions.R")
 library(igraph)
 #######################
-sims.dirs <- c("simul/fig_2cd/3-grn")
+sims.dirs <- c("simul/fig_2cd/0-grn")
 #######################
 
 df.topo <- df.data(sims.dirs, pattern = "simul/fig_2cd/", variable="netw", file_size=210000, w_of_6=TRUE, network=TRUE)
@@ -40,6 +40,9 @@ W <- matrix(c(0,
               ), ncol = sqrt(length(df.topo[1,11:46])))
 
 
+
+# plot(df.topo$a_b, df.topo$ang_M)
+# plot( (df.topo$c_a+df.topo$a_c), df.topo$corrS)
 
 #W with the expected order for igraph
 W1 <- W

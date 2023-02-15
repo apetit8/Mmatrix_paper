@@ -705,7 +705,7 @@ df.topo.wide.m<- function(sims.dir, w_of_6=FALSE, network=FALSE, file_size=10000
         corrM <- extract.correlation(tt, gen=genid)
         opt2 <- extract.fitness(tt, "FitOpt2", gen=genid)[1]
         if (network==TRUE){
-          Wmat <- extract.W.matrix(tt) #W data
+          Wmat <- t(extract.W.matrix(tt)) #W data
           new <- c(ff, gen, M.ang_ppi, S.ref2, M.ang_mpi, M.feat1, M.ang, M.feat3, fitness, corrM, corrS, Wmat )
         }
         if (network!=TRUE){
