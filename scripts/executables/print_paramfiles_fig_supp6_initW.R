@@ -6,7 +6,7 @@ def.s <- 10 #size S
 ################################################################################
 #Print paramfiles Figure Supp
 #####################
-df.fig1de <- df.data("simul/fig_1de/3-grn", pattern = "simul/fig_1de/", variable="netw", file_size=15000, w_of_6=TRUE, network=TRUE)
+df.fig1de <- df.data("simul/fig_2cd/0-grn", pattern = "simul/fig_2cd/", variable="netw", file_size=15000, w_of_6=TRUE, network=TRUE)
 values <- list(-1.5, 1.5,-1.4, 1.4, -1, 1, -0.5, 0.5, -0.7, -0.2, 0.2, -0.3, 0.3, -0.4, 0.4, 0, -0.6, 0.6, -0.9, 0.9, 0.7, -0.8, 0.8, -1.1, 1.1, -1.2, 1.2,-1.3, 1.3, -1.4, 1.4,-0.1, 0.1)
 #####################
 #Lsit of angle to reach
@@ -16,7 +16,7 @@ values <- list(-1.5, 1.5,-1.4, 1.4, -1, 1, -0.5, 0.5, -0.7, -0.2, 0.2, -0.3, 0.3
 
 dir <- "simul/fig_supp6_initW/grn"
 ifelse(!dir.exists(file.path(dir)), dir.create(dir), FALSE)
-param.template = file.path("templates/fig_1de/3-grn", "template.temp")
+param.template = file.path("templates/fig_2cd/0-grn", "template.temp")
 for (a in values) {
   #Find closest network
   mvalue <- which(abs(df.fig1de$ang_M - a) == min(abs(df.fig1de$ang_M - a)))

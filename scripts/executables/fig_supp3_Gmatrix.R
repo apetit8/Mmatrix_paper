@@ -92,8 +92,8 @@ sims.dirs <- list.dirs("simul/fig_2cd", recursive = FALSE)
 
 
 netw_names <- as_labeller(c(
-  `3-grn` = "GRN model",
-  `2-fkl` = "FKL model",
+  `0-grn` = "GRN model",
+  `2-fkl` = "GP model",
   `1-mult` = "Multilinear Model"
 ))
 #With eccentricity
@@ -116,8 +116,8 @@ pfig1de <- pfig1de + facet_wrap(V10 ~., labeller = as_labeller(netw_names),  nco
 
 
 netw_names <- as_labeller(c(
-  `3-grn` = paste0("GRN model, coef = ", round(coef(lm(subset(df.G, V10=="3-grn")$corrG~ subset(df.G, V10=="3-grn")$corrS))[2] ,3)),
-  `2-fkl` = paste0("FKL model, coef = ", round(coef(lm(subset(df.G, V10=="2-fkl")$corrG~ subset(df.G, V10=="2-fkl")$corrS))[2] ,3)),
+  `0-grn` = paste0("GRN model, coef = ", round(coef(lm(subset(df.G, V10=="3-grn")$corrG~ subset(df.G, V10=="3-grn")$corrS))[2] ,3)),
+  `2-fkl` = paste0("GP model, coef = ", round(coef(lm(subset(df.G, V10=="2-fkl")$corrG~ subset(df.G, V10=="2-fkl")$corrS))[2] ,3)),
   `1-mult` = paste0("Multilinear model, coef = ", round(coef(lm(subset(df.G, V10=="1-mult")$corrG~ subset(df.G, V10=="1-mult")$corrS))[2] ,3))
 ))
 
