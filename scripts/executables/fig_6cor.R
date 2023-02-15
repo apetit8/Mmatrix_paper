@@ -4,9 +4,12 @@ sim.dir      <- "simul/fig_6cor"
 #######################
 
 net.size.dir <- list.dirs(sim.dir, full.names=FALSE, recursive=FALSE)
-net.sizes <- as.numeric(gsub("net-n", "", net.size.dir))
+# net.sizes <- as.numeric(gsub("net-n", "", net.size.dir))
+net.sizes <- c(10, 30)
 net.size.dir <- net.size.dir[order(net.sizes)]
 net.sizes    <- net.sizes[order(net.sizes)]
+
+max.dots <- 1000
 
 get.fitcor <- function(parfile, only.sel=TRUE) {
 	pp <- read.param(parfile)
@@ -60,7 +63,7 @@ analyze.M <- function(resfile, genes=1:2, extract.FUN=extract.M.matrix) {
 	}
 }
 
-pdf("figures/fig_6cor.pdf", width=7, height=7)
+pdf("figures/fig_6cor.pdf", width=7, height=3.5*ceiling(length(net.sizes)))
 	layout(matrix(1:length(net.sizes), byrow=TRUE, ncol=2))
 	for (nsi in seq_along(net.sizes)) {
 		dpath <- file.path(sim.dir, net.size.dir[nsi])
@@ -69,7 +72,8 @@ pdf("figures/fig_6cor.pdf", width=7, height=7)
 		resfiles <- list.files(path=dpath, pattern=".txt", full.names=TRUE, recursive = TRUE)
 		fitcor <- lapply(seq_along(parfiles), function(i) get.fitcor(parfiles[i]))
 		mutcor <- lapply(seq_along(parfiles), function(i) get.mutcor(resfiles[i], parfiles[i]))
-		plot(unlist(fitcor), unlist(mutcor), main=paste0("Network of size n=", net.sizes[nsi]),
+		smpl <- sample(seq_along(unlist(fitcor)), min(max.dots, length(unlist(fitcor))))
+		plot(unlist(fitcor)[smpl], unlist(mutcor)[smpl], main=paste0("Network of size n=", net.sizes[nsi]),
 		     xlab="Fitness correlation r(S)", ylab="Mutational correlation r(M)", xlim=c(-1,1), ylim=c(-1,1), col = rgb(red = 0, green = 0, blue = 0, alpha = 0.2)) 
 		abline(lm(unlist(mutcor) ~ unlist(fitcor)))
 	}
