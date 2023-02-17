@@ -89,7 +89,7 @@ analyze.M <- function(resfile, genes=1:2, extract.FUN=extract.M.matrix) {
 }
 
 pdf("figures/fig_6cor.pdf", width=7, height=3.5*ceiling(length(net.sizes)))
-	eccpalette <- col2rgb(plasma(1000))
+	eccpalette <- col2rgb(plasma(1000))/255
 
 	layout(matrix(1:length(net.sizes), byrow=TRUE, ncol=2))
 	for (nsi in seq_along(net.sizes)) {
