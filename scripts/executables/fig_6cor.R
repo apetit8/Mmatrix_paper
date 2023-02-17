@@ -50,10 +50,10 @@ get.mutecc <- function(resfile, parfile, gen=NULL, only.sel=TRUE) {
 	
 	eccmat <- matrix(1, ncol=length(sel), nrow=length(sel))
 	
-	for (i1 in seq_along(seq)) {
-		for (i2 in seq_along(seq)) {
+	for (i1 in seq_along(sel)) {
+		for (i2 in seq_along(sel)) {
 			if (i1 < i2) {
-				ev <- eigen(m[c(sel[i1],sel[i2]),c(sel[i1],sel[i2])])$values
+				ev <- eigen(mm[c(sel[i1],sel[i2]),c(sel[i1],sel[i2])])$values
 				eccmat[i1,i2] <- sqrt(1-ev[2]/ev[1])
 			}
 		}
@@ -88,7 +88,7 @@ analyze.M <- function(resfile, genes=1:2, extract.FUN=extract.M.matrix) {
 	}
 }
 
-pdf("figures/fig_6cor.pdf", width=7, height=3.5*ceiling(length(net.sizes)))
+pdf("figures/fig_6cor.pdf", width=7.5, height=4.5)
 	eccpalette <- col2rgb(plasma(1000))/255
 
 	layout(matrix(1:length(net.sizes), byrow=TRUE, ncol=2))
@@ -101,8 +101,8 @@ pdf("figures/fig_6cor.pdf", width=7, height=3.5*ceiling(length(net.sizes)))
 		mutcor <- lapply(seq_along(parfiles), function(i) get.mutcor(resfiles[i], parfiles[i]))
 		mutecc <- lapply(seq_along(parfiles), function(i) get.mutecc(resfiles[i], parfiles[i]))
 		smpl <- sample(seq_along(unlist(fitcor)), min(max.dots, length(unlist(fitcor))))
-		plot(unlist(fitcor)[smpl], unlist(mutcor)[smpl], main=paste0("Network of size n=", net.sizes[nsi]),
-		     xlab="Fitness correlation r(S)", ylab="Mutational correlation r(M)", xlim=c(-1,1), ylim=c(-1,1), col = rgb(red = eccpalette["red",round(1000*unlist(mutecc))], green = eccpalette["green",round(1000*unlist(mutecc))], blue = eccpalette["blue",round(1000*unlist(mutecc))], alpha = 0.2)) 
+		plot(unlist(fitcor)[smpl], unlist(mutcor)[smpl], main=paste0("Network of size n=", net.sizes[nsi]), pch=19, alpha = 0.2,
+		     xlab="Fitness correlation r(S)", ylab="Mutational correlation r(M)", xlim=c(-1,1), ylim=c(-1,1)) 
 		abline(lm(unlist(mutcor) ~ unlist(fitcor)))
 	}
 dev.off()

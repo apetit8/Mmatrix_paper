@@ -15,7 +15,7 @@ plt <- ggbetweenstats(
   y = corrM,
   centrality.plotting=FALSE,
   plot.type = "box",
-  ggtheme = ggplot2::theme_bw()+theme(plot.margin = unit(c(0.1, 0, 3, 0), "cm")),
+  ggtheme = ggplot2::theme_bw()+theme(plot.margin = unit(c(0.1, 0.2, 1.6, 0), "cm")),
   ggplot.component = scale_x_discrete(labels = c('Full Network','Direct regulation\nonly','Distance: 1 node','Distance: 2 nodes','Distance: 3 nodes')),
   pairwise.comparisons=FALSE,
   bf.message=FALSE,
@@ -27,7 +27,7 @@ plt <- ggbetweenstats(
 
 png.netw1 = readPNG('templates/fig_5/networks_fig5.png')
 
-cairo_pdf("figures/fig_5.pdf", width=7, height=5.8)
+cairo_pdf("figures/fig_5.pdf", width=6, height=4.5) #5.8
 grid.arrange(
   plt,
   ncol = 1,
@@ -35,7 +35,7 @@ grid.arrange(
   widths = c(1),
   clip = FALSE
 )
-grid.raster(png.netw1, x=0.54, y=0.13, width=0.95)
+grid.raster(png.netw1, x=0.55, y=0.09, width=0.9)
 dev.off()
 
 

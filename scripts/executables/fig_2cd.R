@@ -23,13 +23,14 @@ pfig2cd <- ggplot(data=df.fig2cd, aes(ang_S, ang_M))+
   geom_point(aes(y=ang_M_mpi, col=ecc_M), alpha=0.2, show.legend = FALSE)+
   geom_point(aes(y=ang_M_ppi, col=ecc_M), alpha=0.2, show.legend = FALSE)+
   labs(y=expression(paste("Direction of mutational effects ",alpha, "(M)")), x=expression(paste("Fitness function direction, ",alpha, "(S)")), fill = expression("\u03BE\u03B1"))+
-  scale_color_viridis_c(option = "plasma")+
+  scale_color_viridis_c(option = "plasma", limits=c(0,1), breaks = c(0.2, 0.5, 0.8))+
   labs(col = "M Eccentricity\ne(M)")+
   scale_x_continuous(breaks=c(0, pi/4, pi/2, -pi/4, -pi/2),
                      labels=c("0", "\u03c0/4", "\u03c0/2","-\u03c0/4", "-\u03c0/2"))+
   scale_y_continuous(breaks=c(0, pi/4, pi/2, -pi/4, -pi/2),
                      labels=c("0", "\u03c0/4", "\u03c0/2","-\u03c0/4", "-\u03c0/2"))
-pfig2cd <- pfig2cd + facet_wrap(pop ~., labeller = as_labeller(netw_names),  ncol=3) + theme(strip.background = element_blank())+ theme_bw(base_size = 13) #base_size = 12
+pfig2cd <- pfig2cd + facet_wrap(pop ~., labeller = as_labeller(netw_names),  ncol=3) +
+  theme(strip.background = element_blank())+ theme_bw(base_size = 13)+theme(panel.spacing = unit(0.7, "lines")) #base_size = 12
 
 
 cairo_pdf("figures/fig_2c.pdf", width=8, height=4)
@@ -44,18 +45,19 @@ dev.off()
 
 
 netw_names <- as_labeller(c(
-  `0-grn` = paste0("GRN model, \u03B2 = ", round(coef(lm(subset(df.fig2cd, pop=="3-grn")$corrM~ subset(df.fig2cd, pop=="3-grn")$corrS))[2] ,3)),
+  `0-grn` = paste0("GRN model, \u03B2 = ", round(coef(lm(subset(df.fig2cd, pop=="0-grn")$corrM~ subset(df.fig2cd, pop=="0-grn")$corrS))[2] ,3)),
   `2-fkl` = paste0("GP model, \u03B2 = ", round(coef(lm(subset(df.fig2cd, pop=="2-fkl")$corrM~ subset(df.fig2cd, pop=="2-fkl")$corrS))[2] ,3)),
   `1-mult` = paste0("Multilinear model, \u03B2 = ", round(coef(lm(subset(df.fig2cd, pop=="1-mult")$corrM~ subset(df.fig2cd, pop=="1-mult")$corrS))[2] ,3))
 ))
 
 pp <- ggplot(df.fig2cd, aes(x = corrS, y=corrM))+
   geom_point(aes(col=ecc_M), alpha=0.2)+theme(strip.background = element_blank())+theme_bw(base_size = 13)+
-  scale_color_viridis_c(option = "plasma")+
+  geom_smooth(method = "lm", se=FALSE, color="black", formula = y ~ x, size=0.4)+
+  scale_color_viridis_c(option = "plasma", limits=c(0,1), breaks = c(0.2, 0.5, 0.8))+
   labs(y=expression(paste("Mutational effect correlation r(M)")), x=expression(paste("Fitness function correlation, r(S)")), col = "M Eccentricity\ne(M)")+
   coord_fixed(ratio = 1)+
   facet_wrap(pop ~., labeller = as_labeller(netw_names),  ncol=3)+
-  theme(plot.margin = margin(t=4,0,0,0, "lines"),legend.direction="horizontal", legend.position = c(0.5, 1.27))
+  theme(plot.margin = margin(t=4,0,0,0, "lines"),legend.direction="horizontal", legend.position = c(0.5, 1.27))+theme(panel.spacing = unit(0.7, "lines"))
 
 cairo_pdf("figures/fig_2d.pdf", width=8, height=4)
 grid.arrange(

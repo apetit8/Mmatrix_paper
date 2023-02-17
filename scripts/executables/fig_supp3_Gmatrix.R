@@ -106,28 +106,29 @@ pfig1de <- ggplot(data=df.G, aes(ang_S, ang_G))+
   geom_point(aes(y=ang_G+pi, col=ecc_G), alpha=0.2, show.legend = FALSE)+
   geom_point(aes(y=ang_G-pi, col=ecc_G), alpha=0.2, show.legend = FALSE)+
   labs(y=expression(paste("Direction of mutational effects ",alpha, "(M)")), x=expression(paste("Fitness function direction, ",alpha, "(S)")), fill = expression("\u03BE\u03B1"))+
-  scale_color_viridis_c(option = "plasma")+
+  scale_color_viridis_c(option = "plasma", limits=c(0,1), breaks = c(0.2, 0.5, 0.8))+
   labs(col = "M Eccentricity\ne(M)")+
   scale_x_continuous(breaks=c(0, pi/4, pi/2, -pi/4, -pi/2),
                      labels=c("0", "\u03c0/4", "\u03c0/2","-\u03c0/4", "-\u03c0/2"))+
   scale_y_continuous(breaks=c(0, pi/4, pi/2, -pi/4, -pi/2),
                      labels=c("0", "\u03c0/4", "\u03c0/2","-\u03c0/4", "-\u03c0/2"))
-pfig1de <- pfig1de + facet_wrap(V10 ~., labeller = as_labeller(netw_names),  ncol=3) + theme(strip.background = element_blank())+ theme_bw(base_size = 13) #, strip.text = element_blank()
+pfig1de <- pfig1de + facet_wrap(V10 ~., labeller = as_labeller(netw_names),  ncol=3) + theme(strip.background = element_blank())+ theme_bw(base_size = 13)+theme(panel.spacing = unit(0.7, "lines")) #, strip.text = element_blank()
 
 
 netw_names <- as_labeller(c(
-  `0-grn` = paste0("GRN model, coef = ", round(coef(lm(subset(df.G, V10=="3-grn")$corrG~ subset(df.G, V10=="3-grn")$corrS))[2] ,3)),
-  `2-fkl` = paste0("GP model, coef = ", round(coef(lm(subset(df.G, V10=="2-fkl")$corrG~ subset(df.G, V10=="2-fkl")$corrS))[2] ,3)),
-  `1-mult` = paste0("Multilinear model, coef = ", round(coef(lm(subset(df.G, V10=="1-mult")$corrG~ subset(df.G, V10=="1-mult")$corrS))[2] ,3))
+  `0-grn` = paste0("GRN model, \u03B2 = ", round(coef(lm(subset(df.G, V10=="0-grn")$corrG~ subset(df.G, V10=="0-grn")$corrS))[2] ,3)),
+  `2-fkl` = paste0("GP model, \u03B2 = ", round(coef(lm(subset(df.G, V10=="2-fkl")$corrG~ subset(df.G, V10=="2-fkl")$corrS))[2] ,3)),
+  `1-mult` = paste0("Multilinear model, \u03B2 = ", round(coef(lm(subset(df.G, V10=="1-mult")$corrG~ subset(df.G, V10=="1-mult")$corrS))[2] ,3))
 ))
 
 pp <- ggplot(df.G, aes(x = corrS, y=corrG))+
   geom_point(aes(col=ecc_G), alpha=0.2)+theme(strip.background = element_blank())+ theme_bw(base_size = 13)+
-  scale_color_viridis_c(option = "plasma")+
+  scale_color_viridis_c(option = "plasma", limits=c(0,1), breaks = c(0.2, 0.5, 0.8))+
+  geom_smooth(method = "lm", se=FALSE, color="black", formula = y ~ x, size=0.4)+
   labs(y=expression(paste("Mutational effect correlation r(M)")), x=expression(paste("Fitness function correlation, r(S)")), col = "M Eccentricity\ne(M)")+
   coord_fixed(ratio = 1)+
   facet_wrap(V10 ~., labeller = as_labeller(netw_names),  ncol=3)+
-  theme(plot.margin = margin(t=4,0,0,0, "lines"),legend.direction="horizontal", legend.position = c(0.5, 1.27))
+  theme(plot.margin = margin(t=4,0,0,0, "lines"),legend.direction="horizontal", legend.position = c(0.5, 1.27))+theme(panel.spacing = unit(0.7, "lines"))
 
 
 cairo_pdf("figures/fig_supp3_c.pdf", width=8, height=4)

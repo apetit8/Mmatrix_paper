@@ -23,14 +23,14 @@ pfig4 <- ggplot(data=df.fig3, aes(ang_S, ang_M))+
   geom_point(aes(y=ang_M_mpi, col=ecc_M), alpha=0.2, show.legend = FALSE)+
   geom_point(aes(y=ang_M_ppi, col=ecc_M), alpha=0.2, show.legend = TRUE)+
   labs(y=expression(paste(alpha, "(M)")), x=expression(paste(alpha, "(S)")))+
-  scale_color_viridis_c(option = "plasma")+
+  scale_color_viridis_c(option = "plasma", limits=c(0,1), breaks = c(0.2, 0.5, 0.8))+
   labs(col = "e(M)")+
   scale_x_continuous(breaks=c(0, pi/4, pi/2, -pi/4, -pi/2),
                      labels=c("0", "\u03c0/4", "\u03c0/2","-\u03c0/4", "-\u03c0/2"))+
   scale_y_continuous(breaks=c(0, pi/4, pi/2, -pi/4, -pi/2),
                      labels=c("0", "\u03c0/4", "\u03c0/2","-\u03c0/4", "-\u03c0/2"))
 pfig4 <- pfig4 + facet_wrap(pop ~., labeller = as_labeller(netw_names),  ncol=3) +
-  theme_bw()+ theme(plot.margin = unit(c(3.3, 0, 0, 0), "cm")) #, strip.text = element_blank()
+  theme_bw()+ theme(plot.margin = unit(c(3.3, 0, 0, 0), "cm")) +theme(panel.spacing = unit(0.7, "lines"))#, strip.text = element_blank()
 
 
 
@@ -44,6 +44,6 @@ grid.arrange(
   widths = c(1),
   clip = FALSE
 )
-grid.raster(png.netw1, x=0.49, y=0.76, width=0.68)
+grid.raster(png.netw1, x=0.48, y=0.76, width=0.68)
 dev.off()
 

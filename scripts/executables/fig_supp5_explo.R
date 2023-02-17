@@ -23,7 +23,8 @@ values_lab <- c(
   `30` = "30")
 
 pfig <- ggplot(data=subset(df.fig_explo, param=="altgenes"), aes(corrS, corrM))+
-  geom_point(aes(col=ecc_M), alpha=0.3, show.legend = TRUE)+scale_color_viridis_c(option = "plasma", limits=c(min(df.fig_explo$ecc_M), max(df.fig_explo$ecc_M)))+
+  geom_point(aes(col=ecc_M), alpha=0.3, show.legend = TRUE)+scale_color_viridis_c(option = "plasma", limits=c(0,1), breaks = c(0.2, 0.5, 0.8))+
+  geom_smooth(method = "lm", se=FALSE, color="black", formula = y ~ x, size=0.2)+
   coord_fixed(ratio = 1, xlim = c(-0.9,0.9), ylim = c(-0.9,0.9), expand = TRUE, clip = "on")+
   labs(y="r(M)", x="r(S)", title="Genes *n*", col = "e(M)")+
   facet_wrap(value ~., labeller = as_labeller(values_lab), ncol=5) + theme_bw()+
@@ -40,7 +41,8 @@ values_lab <- as_labeller(c(
 
 pfig1 <- ggplot(data=subset(df.fig_explo, param=="pop"), aes(corrS, corrM))+
   geom_point(aes(col=ecc_M), alpha=0.3, show.legend = FALSE)+
-  labs(y="r(M)", x="r(S)", title="Population size *N*" )+scale_color_viridis_c(option = "plasma", limits=c(min(df.fig_explo$ecc_M), max(df.fig_explo$ecc_M)))+
+  geom_smooth(method = "lm", se=FALSE, color="black", formula = y ~ x, size=0.2)+
+  labs(y="r(M)", x="r(S)", title="Population size *N*" )+scale_color_viridis_c(option = "plasma", limits=c(0,1), breaks = c(0.2, 0.5, 0.8))+
   coord_fixed(ratio = 1, xlim = c(-0.9,0.9), ylim = c(-0.9,0.9), expand = TRUE, clip = "on")+theme_bw()+
   facet_wrap(~value, labeller = values_lab, ncol=6)+
   theme(plot.margin = margin(t=0,0,0,0, "lines"))+
@@ -56,7 +58,8 @@ values_lab <- as_labeller(c(
 
 pfig2 <- ggplot(data=subset(df.fig_explo, param=="mutsd"), aes(corrS, corrM))+
   geom_point(aes(col=ecc_M), alpha=0.3, show.legend = FALSE)+
-  labs(y="r(M)", x="r(S)", title="Mutation effect \u03c3<sub>*m*</sub>")+scale_color_viridis_c(option = "plasma", limits=c(min(df.fig_explo$ecc_M), max(df.fig_explo$ecc_M)))+
+  labs(y="r(M)", x="r(S)", title="Mutation effect \u03c3<sub>*m*</sub>")+scale_color_viridis_c(option = "plasma", limits=c(0,1), breaks = c(0.2, 0.5, 0.8))+
+  geom_smooth(method = "lm", se=FALSE, color="black", formula = y ~ x, size=0.2)+
   coord_fixed(ratio = 1, xlim = c(-0.9,0.9), ylim = c(-0.9,0.9), expand = TRUE, clip = "on")+
   facet_wrap(value ~., labeller = as_labeller(values_lab), ncol=6) + theme_bw() +
   theme(plot.margin = margin(t=0,0,0,0, "lines"))+
@@ -72,7 +75,8 @@ values_lab <- as_labeller(c(
 
 pfig3 <- ggplot(data=subset(df.fig_explo, param=="Ssize"), aes(corrS, corrM))+
   geom_point(aes(col=ecc_M), alpha=0.3, show.legend = FALSE)+
-  labs(y="r(M)", x="r(S)", title="S matrix size (trace)" )+scale_color_viridis_c(option = "plasma", limits=c(min(df.fig_explo$ecc_M), max(df.fig_explo$ecc_M)))+
+  labs(y="r(M)", x="r(S)", title="S matrix size (trace)" )+scale_color_viridis_c(option = "plasma", limits=c(0,1), breaks = c(0.2, 0.5, 0.8))+
+  geom_smooth(method = "lm", se=FALSE, color="black", formula = y ~ x, size=0.2)+
   coord_fixed(ratio = 1, xlim = c(-0.9,0.9), ylim = c(-0.9,0.9), expand = TRUE, clip = "on")+
   facet_wrap(value ~., labeller = as_labeller(values_lab), ncol=6) + theme_bw() +
   theme(plot.margin = margin(t=0,0,0,0, "lines"))
@@ -87,7 +91,8 @@ values_lab <- as_labeller(c(
 
 pfig4 <- ggplot(data=subset(df.fig_explo, param=="basal"), aes(corrS, corrM))+
   geom_point(aes(col=ecc_M), alpha=0.3, show.legend = FALSE)+
-  labs(y="r(M)", x="r(S)", title="Basal expression *P*<sub>*i*</sub>" )+scale_color_viridis_c(option = "plasma", limits=c(min(df.fig_explo$ecc_M), max(df.fig_explo$ecc_M)))+
+  labs(y="r(M)", x="r(S)", title="Basal expression \u03ba" )+scale_color_viridis_c(option = "plasma", limits=c(0,1), breaks = c(0.2, 0.5, 0.8))+
+  geom_smooth(method = "lm", se=FALSE, color="black", formula = y ~ x, size=0.2)+
   coord_fixed(ratio = 1, xlim = c(-0.9,0.9), ylim = c(-0.9,0.9), expand = TRUE, clip = "on")+
   facet_wrap(value ~., labeller = as_labeller(values_lab), ncol=6) + theme_bw() +
   theme(plot.margin = margin(t=0,0,0,0, "lines"))+

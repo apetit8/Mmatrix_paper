@@ -23,7 +23,7 @@ piw <- ggplot(data=subset(df.initW, Gen==0 | Gen==10000) , aes(ang_S, ang_M))+
   geom_point(aes(y=ang_M_mpi, col=ecc_M), alpha=0.2, show.legend = FALSE)+
   geom_point(aes(y=ang_M_ppi, col=ecc_M), alpha=0.2, show.legend = TRUE)+
   labs(y=expression(paste(alpha, "(M)")), x=expression(paste(alpha, "(S)")))+
-  scale_color_viridis_c(option = "plasma")+
+  scale_color_viridis_c(option = "plasma", limits=c(0.01,0.99))+
   labs(col = "e(M)")+
   scale_x_continuous(breaks=c(0, pi/4, pi/2, -pi/4, -pi/2),
                      labels=c("0", "\u03c0/4", "\u03c0/2","-\u03c0/4", "-\u03c0/2"))+
