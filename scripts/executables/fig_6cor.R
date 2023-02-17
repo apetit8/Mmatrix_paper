@@ -1,4 +1,7 @@
 source("scripts/functions_R/All_functions.R")
+
+library(viridis)
+
 #######################
 sim.dir      <- "simul/fig_6cor"
 #######################
@@ -36,6 +39,28 @@ get.mutcor <- function(resfile, parfile, gen=NULL, only.sel=TRUE) {
 	c(cormat[upper.tri(cormat)]) # or lower.tri? 
 }
 
+get.mutecc <- function(resfile, parfile, gen=NULL, only.sel=TRUE) {
+	pp <- read.param(parfile)
+	if (only.sel) {
+		sel <- which(pp$FITNESS_STRENGTH > 0.01)
+	} else {
+		sel <- seq_len(pp$GENET_NBLOC)
+	}
+	mm <- if (is.null(gen)) extract.M.matrix(read.table(resfile, header=TRUE)) else extract.M.matrix(read.table(resfile, header=TRUE), gen=gen)
+	
+	eccmat <- matrix(1, ncol=length(sel), nrow=length(sel))
+	
+	for (i1 in seq_along(seq)) {
+		for (i2 in seq_along(seq)) {
+			if (i1 < i2) {
+				ev <- eigen(m[c(sel[i1],sel[i2]),c(sel[i1],sel[i2])])$values
+				eccmat[i1,i2] <- sqrt(1-ev[2]/ev[1])
+			}
+		}
+	}
+	c(eccmat[upper.tri(eccmat)])
+}
+
 analyze.rep <- function(ff) {
 	parfile <- paste0(ff, ".par")
 	resfile <- paste0(ff, ".txt")
@@ -64,6 +89,8 @@ analyze.M <- function(resfile, genes=1:2, extract.FUN=extract.M.matrix) {
 }
 
 pdf("figures/fig_6cor.pdf", width=7, height=3.5*ceiling(length(net.sizes)))
+	eccpalette <- col2rgb(plasma(1000))
+
 	layout(matrix(1:length(net.sizes), byrow=TRUE, ncol=2))
 	for (nsi in seq_along(net.sizes)) {
 		dpath <- file.path(sim.dir, net.size.dir[nsi])
@@ -72,9 +99,10 @@ pdf("figures/fig_6cor.pdf", width=7, height=3.5*ceiling(length(net.sizes)))
 		resfiles <- list.files(path=dpath, pattern=".txt", full.names=TRUE, recursive = TRUE)
 		fitcor <- lapply(seq_along(parfiles), function(i) get.fitcor(parfiles[i]))
 		mutcor <- lapply(seq_along(parfiles), function(i) get.mutcor(resfiles[i], parfiles[i]))
+		mutecc <- lapply(seq_along(parfiles), function(i) get.mutecc(resfiles[i], parfiles[i]))
 		smpl <- sample(seq_along(unlist(fitcor)), min(max.dots, length(unlist(fitcor))))
 		plot(unlist(fitcor)[smpl], unlist(mutcor)[smpl], main=paste0("Network of size n=", net.sizes[nsi]),
-		     xlab="Fitness correlation r(S)", ylab="Mutational correlation r(M)", xlim=c(-1,1), ylim=c(-1,1), col = rgb(red = 0, green = 0, blue = 0, alpha = 0.2)) 
+		     xlab="Fitness correlation r(S)", ylab="Mutational correlation r(M)", xlim=c(-1,1), ylim=c(-1,1), col = rgb(red = eccpalette["red",round(1000*unlist(mutecc))], green = eccpalette["green",round(1000*unlist(mutecc))], blue = eccpalette["blue",round(1000*unlist(mutecc))], alpha = 0.2)) 
 		abline(lm(unlist(mutcor) ~ unlist(fitcor)))
 	}
 dev.off()
